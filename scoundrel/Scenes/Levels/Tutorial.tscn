@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://3abkesatad3y" path="res://scoundrel/Scenes/Levels/tutorial.gd" id="1_hre80"]
 [ext_resource type="Texture2D" uid="uid://qryml5x2bd2m" path="res://scoundrel/Assets/Maps/components/pillar.png" id="3_0pv0c"]
 [ext_resource type="Texture2D" uid="uid://bmwowdigdfpla" path="res://scoundrel/Assets/Maps/components/black_box.png" id="3_o42ll"]
-[ext_resource type="PackedScene" uid="uid://b3rufiiddxjst" path="res://scoundrel/Scenes/Character/Player.tscn" id="3_y6so2"]
+[ext_resource type="PackedScene" uid="uid://b3rufiiddxjst" path="res://scoundrel/Scenes/Player/Player.tscn" id="3_y6so2"]
 [ext_resource type="Texture2D" uid="uid://3pkjmfsec35q" path="res://scoundrel/Assets/Maps/components/web.png" id="4_nsi88"]
 [ext_resource type="Texture2D" uid="uid://b33qoo4u3as2" path="res://scoundrel/Assets/Maps/components/floor platform default.png" id="4_o42ll"]
 [ext_resource type="Texture2D" uid="uid://brjt2wc8ml2lq" path="res://scoundrel/Assets/Maps/components/white_box.png" id="4_plkny"]
@@ -428,245 +428,245 @@ shader_parameter/color_over = Color(0, 0, 0, 1)
 [node name="Tutorial" type="Node2D"]
 script = ExtResource("1_hre80")
 
+[node name="Player" parent="." instance=ExtResource("3_y6so2")]
+position = Vector2(2, 5)
+
 [node name="Layout" type="Node2D" parent="."]
 
 [node name="Collisions" type="Node2D" parent="."]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 visible = false
-tile_map_data = PackedByteArray("AAAxAPv/AAAGAAYAAAAwAPv/AAAGAAYAAAAvAPv/AAAGAAYAAAAuAPv/AAAGAAYAAAAtAPv/AAAGAAYAAAAsAPv/AAAGAAYAAAArAPv/AAAGAAYAAAAqAPv/AAAGAAYAAAApAPv/AAAGAAYAAAAoAPv/AAAGAAYAAAAnAPv/AAAGAAYAAAAmAPv/AAAGAAYAAAAlAPv/AAAGAAYAAAAkAPv/AAAGAAYAAAAjAPv/AAAGAAYAAAAiAPv/AAAGAAYAAAAhAPv/AAAGAAYAAAAgAPv/AAAGAAYAAAAfAPv/AAAGAAYAAAAeAPv/AAAGAAYAAAAdAPv/AAAGAAYAAAAcAPv/AAAGAAYAAAAbAPv/AAAGAAYAAAAaAPv/AAAGAAYAAAAZAPv/AAAGAAYAAAAYAPv/AAAGAAYAAAAXAPv/AAAGAAYAAAAWAPv/AAAGAAYAAAAVAPv/AAAGAAYAAAAUAPv/AAAGAAYAAAATAPv/AAAGAAYAAAASAPv/AAAGAAYAAAARAPv/AAAGAAYAAAAQAPv/AAAGAAYAAAAPAPv/AAAGAAYAAAAOAPv/AAAGAAYAAAANAPv/AAAGAAYAAAAMAPv/AAAGAAYAAAALAPv/AAAGAAYAAAAKAPv/AAAGAAYAAAAJAPv/AAAGAAYAAAAIAPv/AAAGAAYAAAAHAPv/AAAGAAYAAAAGAPv/AAAGAAYAAAAFAPv/AAAGAAYAAAAEAPv/AAAGAAYAAAADAPv/AAAGAAYAAAACAPv/AAAGAAYAAAABAPv/AAAGAAYAAAAAAPv/AAAGAAYAAAD///v/AAAGAAYAAAD+//v/AAAGAAYAAAD9//v/AAAGAAYAAAD8//v/AAAGAAYAAAD7//v/AAAGAAYAAAD6//v/AAAGAAYAAAD5//v/AAAGAAYAAAD4//v/AAAGAAYAAAD3//v/AAAGAAYAAAD2//v/AAAGAAYAAAD1//v/AAAGAAYAAAD0//v/AAAGAAYAAADz//v/AAAGAAYAAADz//z/AAAGAAYAAADz//3/AAAGAAYAAADz//7/AAAGAAYAAADz////AAAGAAYAAADz/wAAAAAGAAYAAADz/wEAAAAGAAYAAADz/wIAAAAGAAYAAADz/wMAAAAGAAYAAADz/wQAAAAGAAYAAADz/wUAAAAGAAYAAADz/wYAAAAGAAYAAADz/wcAAAAGAAYAAADz/wgAAAAGAAYAAADz/wkAAAAGAAYAAAD0/wkAAAAGAAYAAAD1/wkAAAAGAAYAAAD2/wkAAAAGAAYAAAD3/wkAAAAGAAYAAAD4/wkAAAAGAAYAAAD5/wkAAAAGAAYAAAD6/wkAAAAGAAYAAAD7/wkAAAAGAAYAAAD8/wkAAAAGAAYAAAD9/wkAAAAGAAYAAAD+/wkAAAAGAAYAAAD//wkAAAAGAAYAAAAAAAkAAAAGAAYAAAABAAkAAAAGAAYAAAACAAkAAAAGAAYAAAADAAkAAAAGAAYAAAAEAAkAAAAGAAYAAAAFAAkAAAAGAAYAAAAGAAkAAAAGAAYAAAAHAAkAAAAGAAYAAAAIAAkAAAAGAAYAAAAJAAkAAAAGAAYAAAAKAAkAAAAGAAYAAAALAAkAAAAGAAYAAAAMAAkAAAAGAAYAAAANAAkAAAAGAAYAAAAOAAkAAAAGAAYAAAAPAAkAAAAGAAYAAAAQAAkAAAAGAAYAAAARAAkAAAAGAAYAAAASAAkAAAAGAAYAAAATAAkAAAAGAAYAAAAUAAkAAAAGAAYAAAAVAAkAAAAGAAYAAAAWAAkAAAAGAAYAAAAXAAkAAAAGAAYAAAAYAAkAAAAGAAYAAAAZAAkAAAAGAAYAAAAaAAkAAAAGAAYAAAAbAAkAAAAGAAYAAAAcAAkAAAAGAAYAAAAdAAkAAAAGAAYAAAAeAAkAAAAGAAYAAAAfAAkAAAAGAAYAAAAgAAkAAAAGAAYAAAAhAAkAAAAGAAYAAAAiAAkAAAAGAAYAAAAjAAkAAAAGAAYAAAAkAAkAAAAGAAYAAAAlAAkAAAAGAAYAAAAmAAkAAAAGAAYAAAAnAAkAAAAGAAYAAAAoAAkAAAAGAAYAAAApAAkAAAAGAAYAAAAqAAkAAAAGAAYAAAArAAkAAAAGAAYAAAAsAAkAAAAGAAYAAAAtAAkAAAAGAAYAAAAuAAkAAAAGAAYAAAAvAAkAAAAGAAYAAAAwAAkAAAAGAAYAAAAxAAkAAAAGAAYAAAAxAAgAAAAGAAYAAAAxAAcAAAAGAAYAAAAxAAYAAAAGAAYAAAAxAAUAAAAGAAYAAAAxAAQAAAAGAAYAAAAxAAMAAAAGAAYAAAAxAAIAAAAGAAYAAAAxAAEAAAAGAAYAAAAxAAAAAAAGAAYAAAAxAP//AAAGAAYAAAAxAP7/AAAGAAYAAAAxAP3/AAAGAAYAAAAxAPz/AAAGAAYAAAA=")
+tile_map_data = PackedByteArray("AAAxAPv/AAAGAAYAAAAwAPv/AAAGAAYAAAAvAPv/AAAGAAYAAAAuAPv/AAAGAAYAAAAtAPv/AAAGAAYAAAAsAPv/AAAGAAYAAAArAPv/AAAGAAYAAAAqAPv/AAAGAAYAAAApAPv/AAAGAAYAAAAoAPv/AAAGAAYAAAAnAPv/AAAGAAYAAAAmAPv/AAAGAAYAAAAlAPv/AAAGAAYAAAAkAPv/AAAGAAYAAAAjAPv/AAAGAAYAAAAiAPv/AAAGAAYAAAAhAPv/AAAGAAYAAAAgAPv/AAAGAAYAAAAfAPv/AAAGAAYAAAAeAPv/AAAGAAYAAAAdAPv/AAAGAAYAAAAcAPv/AAAGAAYAAAAbAPv/AAAGAAYAAAAaAPv/AAAGAAYAAAAZAPv/AAAGAAYAAAAYAPv/AAAGAAYAAAAXAPv/AAAGAAYAAAAWAPv/AAAGAAYAAAAVAPv/AAAGAAYAAAAUAPv/AAAGAAYAAAATAPv/AAAGAAYAAAASAPv/AAAGAAYAAAARAPv/AAAGAAYAAAAQAPv/AAAGAAYAAAAPAPv/AAAGAAYAAAAOAPv/AAAGAAYAAAANAPv/AAAGAAYAAAAMAPv/AAAGAAYAAAALAPv/AAAGAAYAAAAKAPv/AAAGAAYAAAAJAPv/AAAGAAYAAAAIAPv/AAAGAAYAAAAHAPv/AAAGAAYAAAAGAPv/AAAGAAYAAAAFAPv/AAAGAAYAAAAEAPv/AAAGAAYAAAADAPv/AAAGAAYAAAACAPv/AAAGAAYAAAABAPv/AAAGAAYAAAAAAPv/AAAGAAYAAAD///v/AAAGAAYAAAD+//v/AAAGAAYAAAD9//v/AAAGAAYAAAD8//v/AAAGAAYAAAD7//v/AAAGAAYAAAD6//v/AAAGAAYAAAD5//v/AAAGAAYAAAD4//v/AAAGAAYAAAD3//v/AAAGAAYAAAD2//v/AAAGAAYAAAD1//v/AAAGAAYAAAD0//v/AAAGAAYAAADz//v/AAAGAAYAAADz//z/AAAGAAYAAADz//3/AAAGAAYAAADz//7/AAAGAAYAAADz////AAAGAAYAAADz/wAAAAAGAAYAAADz/wEAAAAGAAYAAADz/wIAAAAGAAYAAADz/wMAAAAGAAYAAADz/wQAAAAGAAYAAADz/wUAAAAGAAYAAADz/wYAAAAGAAYAAADz/wcAAAAGAAYAAADz/wgAAAAGAAYAAADz/wkAAAAGAAYAAAD0/wkAAAAGAAYAAAD1/wkAAAAGAAYAAAD2/wkAAAAGAAYAAAD3/wkAAAAGAAYAAAD4/wkAAAAGAAYAAAD5/wkAAAAGAAYAAAD6/wkAAAAGAAYAAAD7/wkAAAAGAAYAAAD8/wkAAAAGAAYAAAD9/wkAAAAGAAYAAAD+/wkAAAAGAAYAAAD//wkAAAAGAAYAAAAAAAkAAAAGAAYAAAABAAkAAAAGAAYAAAACAAkAAAAGAAYAAAADAAkAAAAGAAYAAAAEAAkAAAAGAAYAAAAFAAkAAAAGAAYAAAAGAAkAAAAGAAYAAAAHAAkAAAAGAAYAAAAIAAkAAAAGAAYAAAAJAAkAAAAGAAYAAAAKAAkAAAAGAAYAAAALAAkAAAAGAAYAAAAMAAkAAAAGAAYAAAANAAkAAAAGAAYAAAAOAAkAAAAGAAYAAAAPAAkAAAAGAAYAAAAQAAkAAAAGAAYAAAARAAkAAAAGAAYAAAASAAkAAAAGAAYAAAATAAkAAAAGAAYAAAAUAAkAAAAGAAYAAAAVAAkAAAAGAAYAAAAWAAkAAAAGAAYAAAAXAAkAAAAGAAYAAAAYAAkAAAAGAAYAAAAZAAkAAAAGAAYAAAAaAAkAAAAGAAYAAAAbAAkAAAAGAAYAAAAcAAkAAAAGAAYAAAAdAAkAAAAGAAYAAAAeAAkAAAAGAAYAAAAfAAkAAAAGAAYAAAAgAAkAAAAGAAYAAAAhAAkAAAAGAAYAAAAiAAkAAAAGAAYAAAAjAAkAAAAGAAYAAAAkAAkAAAAGAAYAAAAlAAkAAAAGAAYAAAAmAAkAAAAGAAYAAAAnAAkAAAAGAAYAAAAoAAkAAAAGAAYAAAApAAkAAAAGAAYAAAAqAAkAAAAGAAYAAAArAAkAAAAGAAYAAAAsAAkAAAAGAAYAAAAtAAkAAAAGAAYAAAAuAAkAAAAGAAYAAAAvAAkAAAAGAAYAAAAwAAkAAAAGAAYAAAAxAAkAAAAGAAYAAAAyAAkAAAAGAAYAAAAzAAkAAAAGAAYAAAA0AAkAAAAGAAYAAAA1AAkAAAAGAAYAAAA2AAkAAAAGAAYAAAA3AAkAAAAGAAYAAAA4AAkAAAAGAAYAAAA5AAkAAAAGAAYAAAAyAPv/AAAGAAYAAAAzAPv/AAAGAAYAAAA0APv/AAAGAAYAAAA1APv/AAAGAAYAAAA2APv/AAAGAAYAAAA3APv/AAAGAAYAAAA4APv/AAAGAAYAAAA5APv/AAAGAAYAAAA6AAkAAAAGAAYAAAA7AAkAAAAGAAYAAAA6APv/AAAGAAYAAAA7APv/AAAGAAYAAAA7APz/AAAGAAYAAAA7AP3/AAAGAAYAAAA7AP7/AAAGAAYAAAA7AP//AAAGAAYAAAA7AAAAAAAGAAYAAAA7AAEAAAAGAAYAAAA7AAIAAAAGAAYAAAA7AAMAAAAGAAYAAAA7AAQAAAAGAAYAAAA7AAUAAAAGAAYAAAA7AAYAAAAGAAYAAAA7AAcAAAAGAAYAAAA7AAgAAAAGAAYAAAA=")
 tile_set = SubResource("TileSet_plkny")
 
-[node name="Node" type="Node" parent="."]
+[node name="Map" type="Node" parent="."]
 
-[node name="-3" type="CanvasLayer" parent="Node"]
+[node name="-3" type="CanvasLayer" parent="Map"]
 layer = -3
 follow_viewport_enabled = true
 follow_viewport_scale = 0.7
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-3"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-3"]
 position = Vector2(-1142.8572, 670)
 scale = Vector2(0.76171875, 0.76171875)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar" type="Sprite2D" parent="Node/-3/Pillar2"]
+[node name="Pillar" type="Sprite2D" parent="Map/-3/Pillar2"]
 position = Vector2(-3, -959)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-3/Pillar2"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-3/Pillar2"]
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar3" type="Sprite2D" parent="Node/-3"]
+[node name="Pillar3" type="Sprite2D" parent="Map/-3"]
 position = Vector2(2171.4285, 685.71423)
 scale = Vector2(0.76171875, 0.76171875)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar" type="Sprite2D" parent="Node/-3/Pillar3"]
+[node name="Pillar" type="Sprite2D" parent="Map/-3/Pillar3"]
 position = Vector2(-3, -959)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-3/Pillar3"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-3/Pillar3"]
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar4" type="Sprite2D" parent="Node/-3"]
+[node name="Pillar4" type="Sprite2D" parent="Map/-3"]
 position = Vector2(3644.2861, 677.1429)
 scale = Vector2(0.76171875, 0.76171875)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar" type="Sprite2D" parent="Node/-3/Pillar4"]
+[node name="Pillar" type="Sprite2D" parent="Map/-3/Pillar4"]
 position = Vector2(-3, -959)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-3/Pillar4"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-3/Pillar4"]
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar5" type="Sprite2D" parent="Node/-3"]
+[node name="Pillar5" type="Sprite2D" parent="Map/-3"]
 position = Vector2(-165.71423, 658.5714)
 scale = Vector2(0.76171875, 0.76171875)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar" type="Sprite2D" parent="Node/-3/Pillar5"]
+[node name="Pillar" type="Sprite2D" parent="Map/-3/Pillar5"]
 position = Vector2(-3, -959)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-3/Pillar5"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-3/Pillar5"]
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
-[node name="-2" type="CanvasLayer" parent="Node"]
+[node name="Web2" type="Sprite2D" parent="Map/-3/Pillar5"]
+position = Vector2(3094.271, -1330.6373)
+scale = Vector2(1.3128206, 1.3128206)
+texture = ExtResource("4_nsi88")
+
+[node name="-2" type="CanvasLayer" parent="Map"]
 layer = -2
 follow_viewport_enabled = true
 follow_viewport_scale = 0.8
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-2"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-2"]
 position = Vector2(629.0001, 720)
 scale = Vector2(0.76171875, 0.76171875)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar" type="Sprite2D" parent="Node/-2/Pillar2"]
+[node name="Pillar" type="Sprite2D" parent="Map/-2/Pillar2"]
 position = Vector2(-3, -959)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-2/Pillar2"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-2/Pillar2"]
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar3" type="Sprite2D" parent="Node/-2"]
+[node name="Pillar3" type="Sprite2D" parent="Map/-2"]
 position = Vector2(2866.25, 678.75)
 scale = Vector2(0.76171875, 0.76171875)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar" type="Sprite2D" parent="Node/-2/Pillar3"]
+[node name="Pillar" type="Sprite2D" parent="Map/-2/Pillar3"]
 position = Vector2(-3, -959)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-2/Pillar3"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-2/Pillar3"]
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
-[node name="Web" type="Sprite2D" parent="Node/-2"]
-position = Vector2(674.99994, -75)
+[node name="Web" type="Sprite2D" parent="Map/-2"]
+position = Vector2(656.25, -75)
 texture = ExtResource("4_nsi88")
 
-[node name="Web2" type="Sprite2D" parent="Node/-2"]
-position = Vector2(2191.25, -355)
-texture = ExtResource("4_nsi88")
-
-[node name="-1" type="CanvasLayer" parent="Node"]
+[node name="-1" type="CanvasLayer" parent="Map"]
 layer = -1
 follow_viewport_enabled = true
 follow_viewport_scale = 0.9
 
-[node name="WhiteBox" type="Sprite2D" parent="Node/-1"]
+[node name="WhiteBox" type="Sprite2D" parent="Map/-1"]
 modulate = Color(0.3254902, 0.53333336, 0.1882353, 0.5529412)
 position = Vector2(1353.3333, -1.1111107)
 scale = Vector2(4, 2.088)
 texture = ExtResource("4_plkny")
 metadata/_edit_lock_ = true
 
-[node name="blur" type="Sprite2D" parent="Node/-1"]
+[node name="blur" type="Sprite2D" parent="Map/-1"]
 material = SubResource("ShaderMaterial_nsi88")
 position = Vector2(1353.3333, -1.1111107)
 scale = Vector2(4, 2.088)
 texture = ExtResource("4_plkny")
 metadata/_edit_lock_ = true
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-1"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-1"]
 position = Vector2(1498.8888, 652.2222)
 scale = Vector2(0.76171875, 0.76171875)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar" type="Sprite2D" parent="Node/-1/Pillar2"]
+[node name="Pillar" type="Sprite2D" parent="Map/-1/Pillar2"]
 position = Vector2(-3, -959)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-1/Pillar2"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-1/Pillar2"]
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar3" type="Sprite2D" parent="Node/-1"]
+[node name="Pillar3" type="Sprite2D" parent="Map/-1"]
 position = Vector2(-682.2224, 665.5556)
 scale = Vector2(0.76171875, 0.76171875)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar" type="Sprite2D" parent="Node/-1/Pillar3"]
+[node name="Pillar" type="Sprite2D" parent="Map/-1/Pillar3"]
 position = Vector2(-3, -959)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-1/Pillar3"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-1/Pillar3"]
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar4" type="Sprite2D" parent="Node/-1"]
+[node name="Pillar4" type="Sprite2D" parent="Map/-1"]
 position = Vector2(3584.4443, 665.5556)
 scale = Vector2(0.76171875, 0.76171875)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar" type="Sprite2D" parent="Node/-1/Pillar4"]
+[node name="Pillar" type="Sprite2D" parent="Map/-1/Pillar4"]
 position = Vector2(-3, -959)
 texture = ExtResource("3_0pv0c")
 
-[node name="Pillar2" type="Sprite2D" parent="Node/-1/Pillar4"]
+[node name="Pillar2" type="Sprite2D" parent="Map/-1/Pillar4"]
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
-[node name="Web2" type="Sprite2D" parent="Node/-1/Pillar4"]
-position = Vector2(-2718.122, -487.78583)
+[node name="Web2" type="Sprite2D" parent="Map/-1/Pillar4"]
+position = Vector2(-2739.4187, -1461.6068)
 scale = Vector2(1.3128206, 1.3128206)
 texture = ExtResource("4_nsi88")
 
-[node name="0" type="CanvasLayer" parent="Node"]
+[node name="0" type="CanvasLayer" parent="Map"]
 layer = 0
 follow_viewport_enabled = true
 
-[node name="FloorPlatformDefault" type="Sprite2D" parent="Node/0"]
+[node name="FloorPlatformDefault" type="Sprite2D" parent="Map/0"]
 position = Vector2(-325, 734)
 texture = ExtResource("4_o42ll")
 
-[node name="FloorPlatformDefault" type="Sprite2D" parent="Node/0/FloorPlatformDefault"]
+[node name="FloorPlatformDefault" type="Sprite2D" parent="Map/0/FloorPlatformDefault"]
 position = Vector2(954, -2)
 texture = ExtResource("4_o42ll")
 
-[node name="FloorPlatformDefault2" type="Sprite2D" parent="Node/0/FloorPlatformDefault"]
+[node name="FloorPlatformDefault2" type="Sprite2D" parent="Map/0/FloorPlatformDefault"]
 position = Vector2(1899, -4)
 texture = ExtResource("4_o42ll")
 
-[node name="FloorPlatformDefault3" type="Sprite2D" parent="Node/0/FloorPlatformDefault"]
+[node name="FloorPlatformDefault3" type="Sprite2D" parent="Map/0/FloorPlatformDefault"]
 position = Vector2(2844, -7)
 texture = ExtResource("4_o42ll")
 
-[node name="FloorPlatformDefault4" type="Sprite2D" parent="Node/0/FloorPlatformDefault"]
+[node name="FloorPlatformDefault4" type="Sprite2D" parent="Map/0/FloorPlatformDefault"]
 position = Vector2(3628, -14)
 texture = ExtResource("4_o42ll")
 
-[node name="Web" type="Sprite2D" parent="Node/0/FloorPlatformDefault"]
+[node name="Web" type="Sprite2D" parent="Map/0/FloorPlatformDefault"]
 position = Vector2(542, 93)
 texture = ExtResource("4_nsi88")
 
-[node name="Web2" type="Sprite2D" parent="Node/0/FloorPlatformDefault"]
+[node name="Web2" type="Sprite2D" parent="Map/0/FloorPlatformDefault"]
 position = Vector2(2690, 81)
 texture = ExtResource("4_nsi88")
 
-[node name="1" type="CanvasLayer" parent="Node"]
+[node name="1" type="CanvasLayer" parent="Map"]
 follow_viewport_enabled = true
 
-[node name="2" type="CanvasLayer" parent="Node"]
+[node name="2" type="CanvasLayer" parent="Map"]
 layer = 2
 follow_viewport_enabled = true
 
-[node name="3" type="CanvasLayer" parent="Node"]
+[node name="3" type="CanvasLayer" parent="Map"]
 layer = 3
 follow_viewport_enabled = true
 follow_viewport_scale = 1.3
 
-[node name="FloorPlatformDefault" type="Sprite2D" parent="Node/3"]
+[node name="FloorPlatformDefault" type="Sprite2D" parent="Map/3"]
 modulate = Color(0.48962224, 0.48962224, 0.48962218, 1)
 position = Vector2(1568, 788.92346)
 texture = ExtResource("4_o42ll")
 
-[node name="FloorPlatformDefault2" type="Sprite2D" parent="Node/3/FloorPlatformDefault"]
+[node name="FloorPlatformDefault2" type="Sprite2D" parent="Map/3/FloorPlatformDefault"]
 position = Vector2(1295, 3)
 texture = ExtResource("4_o42ll")
 
-[node name="FloorPlatformDefault3" type="Sprite2D" parent="Node/3/FloorPlatformDefault"]
+[node name="FloorPlatformDefault3" type="Sprite2D" parent="Map/3/FloorPlatformDefault"]
 position = Vector2(2228, -6)
 texture = ExtResource("4_o42ll")
 
-[node name="FloorPlatformDefault4" type="Sprite2D" parent="Node/3/FloorPlatformDefault"]
+[node name="FloorPlatformDefault4" type="Sprite2D" parent="Map/3/FloorPlatformDefault"]
 position = Vector2(-1894, 6)
 texture = ExtResource("4_o42ll")
 
-[node name="FloorPlatformDefault5" type="Sprite2D" parent="Node/3/FloorPlatformDefault"]
+[node name="FloorPlatformDefault5" type="Sprite2D" parent="Map/3/FloorPlatformDefault"]
 position = Vector2(-947, 3)
 texture = ExtResource("4_o42ll")
 
-[node name="Web3" type="Sprite2D" parent="Node/3/FloorPlatformDefault"]
+[node name="Web3" type="Sprite2D" parent="Map/3/FloorPlatformDefault"]
 position = Vector2(-361.07684, 86.461136)
 texture = ExtResource("4_nsi88")
-
-[node name="Player" parent="." instance=ExtResource("3_y6so2")]
-visible = false
-position = Vector2(2, 5)
