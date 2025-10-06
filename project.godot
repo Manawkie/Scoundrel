@@ -15,6 +15,11 @@ run/main_scene="uid://bp1i2m3yotiej"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
+[display]
+
+window/stretch/mode="viewport"
+window/stretch/aspect="expand"
+
 [input]
 
 walk_left={

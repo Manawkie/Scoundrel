@@ -36,6 +36,8 @@
 [ext_resource type="Texture2D" uid="uid://dan4a8citd2pr" path="res://scoundrel/Assets/Sprites/Kael/walk/walk_frame0005.png" id="26_s13ic"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_nbsye"]
+radius = 17.0
+height = 88.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_snscb"]
 animations = [{
@@ -468,9 +470,12 @@ graph_offset = Vector2(-98, -66)
 script = ExtResource("1_k2cw6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, 0)
 shape = SubResource("CapsuleShape2D_nbsye")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(6.0000076, -63.999992)
+scale = Vector2(0.87890625, 0.87890625)
 sprite_frames = SubResource("SpriteFrames_snscb")
 animation = &"idle"
 
@@ -483,3 +488,7 @@ libraries = {
 active = false
 tree_root = SubResource("AnimationNodeStateMachine_e7qup")
 anim_player = NodePath("../AnimationPlayer")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(-2, -293)
+zoom = Vector2(0.6, 0.6)
