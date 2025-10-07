@@ -5,21 +5,24 @@ extends CharacterBody2D
 @onready var anim_tree: AnimationTree = $AnimationTree
 @onready var anim_player = $AnimationPlayer
 @onready var eye_sprite = $EyeKael
-@onready var bomb_scene = preload("res://scoundrel/Scenes/Objects/Bomb.tscn")
+@onready var bomb_scene = preload("res://scoundrel/Scenes/Objects/Bomb/Bomb.tscn")
 @onready var bullet_scene = preload("res://scoundrel/Scenes/Objects/Bullet/Bullet.tscn")
+@onready var grapple_hook_scene = preload("res://scoundrel/Scenes/Objects/Grapple_Hook/Hook.tscn")
 var state_machine : AnimationNodeStateMachinePlayback
 
-enum WeaponState {SCIMITAR, GUN}
+enum WeaponState {SCIMITAR, GUN, GRAPPLE_HOOK}
 
 # --- WEAPON CONSTANTS ---
 const SCIMITAR_COOLDOWN = 0.3 # Cooldown after melee attack finishes
 const GUN_COOLDOWN = 0.5 	  # Cooldown after gun attack finishes
 const SCIMITAR_ANIM_DURATION = 0.2
 const GUN_ANIM_DURATION = 0.3
-var current_weapon: WeaponState = WeaponState.SCIMITAR
-var is_attacking: bool = false
-var attack_timer: float = 0.0
 
+# --- GRAPPLE HOOK CONSTANTS ---
+const HOOK_SPEED = 2000.0       # Speed the hook travels
+const MAX_HOOK_LENGTH = 1500.0   # Max distance the hook can reach
+const GRAPPLE_PULL_ACCEL = 4000.0 # Acceleration when pulling towards the hook point
+const GRAPPLE_COOLDOWN = 0.5    # Cooldown after hook retraction
 
 # --- DASH CONSTANTS ---
 const DASH_SPEED = 1600.0
@@ -29,6 +32,7 @@ const DASH_COOLDOWN = 0.5   # seconds until the player can dash again
 # --- BOMB CONSTANTS ---
 const BOMB_COOLDOWN = 1.0       # seconds until the player can drop another bomb (cooldown)
 const BOMB_ANIMATION_DURATION = 0.4 # NEW: seconds the drop animation lasts
+const BOMB_DROP_OFFSET_X = 20.0 # How far it is going to spawn in fornt of the player
 
 # --- MOVEMENT CONSTANTS ---
 const JUMP_VELOCITY = -1000.0 
@@ -36,7 +40,6 @@ const SPEED = 200.0
 const RSPEED = 800.0
 const GRAVITY = 1800.0
 const FAST_FALL_SPEED = 1800.0
-
 
 # --- EYE CONSTANTS
 const MAX_PUPIL_MOVEMENT = 8.0 # Max distance the eye can shift in pixels
@@ -46,12 +49,27 @@ const EYE_SMOOTH_FACTOR = 0.1 # How smoothly the eye tracks the cursor (0.0 to 1
 const AIR_CONTROL_FACTOR = 0.6 # Multiplier for max horizontal speed in the air (e.g., 800 * 0.6 = 480)
 const AIR_ACCEL_RATE = 0.15    # The "smoothness" factor for changing direction in the air (0.0 to 1.0)
 
+# --- MOVEMENT  VARIABLE ---
 var direction: float = 0.0
 var last_direction: float = 1.0 # Tracks last non-zero direction for dashing
 var current_state = "Idle"
 var current_anim_playing = ""
 var eye_original_position: Vector2 
 var run_toggle = false
+
+# --- WEAPON VARIABLES ---
+var current_weapon: WeaponState = WeaponState.SCIMITAR
+var is_attacking: bool = false
+var attack_timer: float = 0.0
+
+# --- GRAPPLE HOOK VARIABLES ---
+var is_grappling: bool = false # True if launched or hooked
+var is_hooked: bool = false    # True if attached to a wall
+var hook_point: Vector2 = Vector2.ZERO # World coordinates of the attachment point
+var hook_vector: Vector2 = Vector2.ZERO # Direction the hook is traveling
+var current_rope_length: float = 0.0
+var initial_rope_length: float = 0.0 # NEW: Stores the max possible length for the current swing
+var current_hook_instance: Area2D = null
 
 # --- DASH VARIABLES ---
 var is_dashing: bool = false
@@ -88,17 +106,27 @@ func _physics_process(delta: float) -> void:
 	handle_dash(delta)
 	handle_bomb_drop(delta)
 	handle_weapon_combat(delta)
+	handle_hook_launch(delta)
 	if is_dashing or is_dropping_bomb:
 		velocity.y = 0
+	elif is_grappling and not is_hooked:
+		velocity.y = 0
+		velocity.x = lerp(velocity.x, 0.0, 0.02)
+	elif is_hooked:
+		handle_swing_physics(delta)
 	else:
 		player_movement_x()
 		player_movement_y()
 		apply_gravity(delta)
+	update_sprite_flip()
 	move_and_slide()
 	determine_animation_state()
 	anim_manager(current_state)
 
 func player_movement_y():
+	
+	if is_grappling:
+		return
 	
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
@@ -115,7 +143,7 @@ func player_movement_y():
 func player_movement_x():
 	direction = Input.get_axis("walk_left", "walk_right")
 	
-	if is_dashing:
+	if is_dashing or is_grappling:
 		return 
 		
 	var target_speed = SPEED
@@ -127,13 +155,39 @@ func player_movement_x():
 		
 		velocity.x = direction * target_speed
 	elif direction != 0:
-
-		var target_vel = direction * target_speed * AIR_CONTROL_FACTOR
-		velocity.x = lerp(velocity.x, target_vel, AIR_ACCEL_RATE)
+		# to maintain momentum if moving in a greater speed 
+		var target_max_speed = target_speed * AIR_CONTROL_FACTOR
+		var desired_target_vel = direction * target_max_speed
+		var input_matches_momentum = sign(direction) == sign(velocity.x)
+		var is_overspeeding = abs(velocity.x) > target_max_speed
 		
+		if is_overspeeding and input_matches_momentum:
+			pass
+		else:
+			velocity.x = lerp(velocity.x, desired_target_vel, AIR_ACCEL_RATE)
+
 	if direction != 0:
-			sprite.flip_h = direction < 0
 			last_direction = direction
+
+func update_sprite_flip():
+	var face_direction = 0.0
+
+	# Priority 1: Swinging or Airborne
+	if is_hooked or not is_on_floor():
+		# When swinging or airborne, base direction on horizontal velocity (momentum).
+		# Use a small threshold (e.g., 5.0) to avoid jitter when velocity is near zero.
+		if abs(velocity.x) > 5.0:
+			face_direction = sign(velocity.x)
+	
+	# Priority 2: Normal Grounded Movement
+	elif direction != 0:
+		# When on floor (and not swinging), base direction on input.
+		face_direction = direction
+
+	# Apply the flip and update last_direction only if a distinct direction is found
+	if face_direction != 0:
+		sprite.flip_h = face_direction < 0
+		last_direction = face_direction
 
 func apply_gravity(delta: float):
 	if not is_on_floor():
@@ -143,6 +197,18 @@ func apply_gravity(delta: float):
 			velocity.y = 0
 
 func determine_animation_state():
+	if is_grappling:
+		current_state = "Grapple_Swing" if is_hooked else "Grapple_Launch"
+		return
+		
+	if is_attacking:
+		match current_weapon:
+			WeaponState.SCIMITAR:
+				current_state = "Scimitar_Attack"
+			WeaponState.GUN:
+				current_state = "Gun_Fire"
+		return
+	
 	if is_dashing:
 		current_state = "Dash"
 		return
@@ -191,6 +257,10 @@ func anim_manager(state):
 			state_machine.travel("Scimitar_Attack")
 		"Gun_Fire":
 			state_machine.travel("Gun_Fire")
+		"Grapple_Launch":
+			state_machine.travel("Grapple_Launch")
+		"Grapple_Swing":
+			state_machine.travel("Grapple_Swing")
 	
 	current_anim_playing = state
 
@@ -223,8 +293,21 @@ func handle_weapon_combat(delta):
 		current_weapon = WeaponState.SCIMITAR
 		print("scimitar")
 	
+	if Input.is_action_just_pressed("select_grapple"):
+		if is_hooked:
+			pass
+		else:
+			current_weapon = WeaponState.GRAPPLE_HOOK
+			print("grapple hook")
+	
 	if Input.is_action_just_pressed("fire") and not is_attacking:
-		start_attack()
+		if current_weapon == WeaponState.GRAPPLE_HOOK and not is_grappling:
+			start_grapple()
+		elif not is_grappling and not is_attacking:
+			start_attack()
+	
+	if is_grappling and Input.is_action_just_pressed("jump"): 
+		retract_hook(is_hooked)
 		
 	if is_attacking:
 		attack_timer -= delta
@@ -259,6 +342,112 @@ func start_attack():
 func end_attack():
 	is_attacking = false
 
+func start_grapple():
+	is_grappling = true
+	is_hooked = false 
+	velocity.y = 0 
+	
+	var mouse_pos = get_global_mouse_position()
+	hook_vector = (mouse_pos - global_position).normalized()
+	
+	current_hook_instance = grapple_hook_scene.instantiate() 
+	get_tree().root.add_child(current_hook_instance)
+	
+	if current_hook_instance.has_method("set_grapple_mode"):
+		# Assuming the projectile script has a function to set its mode and speed
+		current_hook_instance.set_grapple_mode(hook_vector, HOOK_SPEED, self)
+	
+	current_hook_instance.spawner = self 
+	current_hook_instance.global_position = global_position
+
+func handle_hook_launch(_delta):
+	# Runs while the hook is launched but not yet hooked
+	if is_grappling and not is_hooked and is_instance_valid(current_hook_instance):
+		# Check max distance (if hook script fails to return the hook)
+		if global_position.distance_to(current_hook_instance.global_position) > MAX_HOOK_LENGTH:
+			retract_hook()
+			return
+
+func on_hook_hit(hit_point: Vector2):
+	# CRITICAL: This is called by the hook projectile when it hits a solid object.
+	if not is_grappling or is_hooked:
+		return
+	
+	is_hooked = true
+	hook_point = hit_point
+	
+	var initial_distance = global_position.distance_to(hook_point)
+	initial_rope_length = initial_distance
+	current_rope_length = initial_distance
+	
+	# Destroy the moving hook instance
+	if is_instance_valid(current_hook_instance):
+		current_hook_instance.queue_free()
+		current_hook_instance = null
+		
+	# Ensure the player starts with a velocity suitable for swinging
+	if velocity.length() < 100: # Give a minimum outward swing speed if stationary
+		velocity = hook_vector * 500
+
+func handle_swing_physics(delta):
+	if not is_hooked:
+		return
+	var rope_dir = (hook_point - global_position).normalized()
+	
+	if Input.is_action_pressed("fire"):
+		current_rope_length = max(current_rope_length - GRAPPLE_PULL_ACCEL * delta * 0.075, 50.0)
+		var pull_vector = rope_dir * GRAPPLE_PULL_ACCEL * delta * 0.5
+		velocity += pull_vector
+	else:
+		current_rope_length = initial_rope_length
+	
+	if is_on_floor():
+		velocity.x = 0
+		return
+	
+	velocity.y += GRAVITY * delta
+	
+	var max_length = current_rope_length
+	
+	var delta_to_hook = hook_point - global_position
+	var separation = delta_to_hook.length() - max_length
+	
+	if separation > 0:
+		var tangent_vector = Vector2(-rope_dir.y, rope_dir.x)
+		var tangential_velocity = velocity.dot(tangent_vector) * tangent_vector
+		velocity = tangential_velocity
+		
+		global_position += rope_dir * separation * 0.1
+		
+	var input_direction = Input.get_axis("walk_left", "walk_right")
+	if input_direction != 0:
+		var tangent_vector = Vector2(-rope_dir.y, rope_dir.x) * input_direction
+		velocity += tangent_vector * 100.0 * delta
+
+func retract_hook(apply_jump=false):
+	# Allow momentum to continue but reset grapple state
+	is_grappling = false
+	is_hooked = false
+	hook_point = Vector2.ZERO
+	
+	# Reset vertical velocity to prevent instant drop/snap to ground on release.
+	velocity.y = 0
+	
+	if apply_jump:
+		# Apply upward jump velocity if the release was triggered by the 'jump' action while hooked.
+		velocity.y = JUMP_VELOCITY
+	
+	if is_instance_valid(current_hook_instance):
+		current_hook_instance.queue_free()
+		current_hook_instance = null
+		
+	# Give the player a short cooldown before re-grappling
+	# You might want to repurpose the attack_timer for this, or add a dedicated cooldown
+	
+	# If not on floor, start falling normally
+	if not is_on_floor():
+		apply_gravity(0.0)
+
 func handle_bomb_drop(delta):
 	if Input.is_action_just_pressed("drop_bomb") and can_drop_bomb: 
 		start_bomb_drop()
@@ -266,16 +455,18 @@ func handle_bomb_drop(delta):
 	if is_dropping_bomb:
 		bomb_timer -= delta
 		
-		# Placeholder for Bomb Instantiation would go here...
-		
 		if bomb_timer <= 0:
 			
 			var bomb_instance = bomb_scene.instantiate()
-			get_tree().current_scene.add_child(bomb_instance)
-			bomb_instance.global_position = global_position + Vector2(0, 10) 
-			bomb_instance.apply_initial_impulse(velocity)
+			get_tree().root.add_child(bomb_instance) 
 			
+			var drop_offset = Vector2(BOMB_DROP_OFFSET_X * last_direction, 10)
+			bomb_instance.global_position = global_position + drop_offset
 			
+			# Ensure the bomb inherits the velocity
+			if bomb_instance.has_method("apply_initial_impulse"):
+				bomb_instance.apply_initial_impulse(velocity)
+				
 			end_bomb_animation()
 			
 	# 3. Manage Cooldown (Only runs if not currently in the animation phase)

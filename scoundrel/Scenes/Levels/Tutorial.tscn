@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=4 uid="uid://dsuobl1l72y3j"]
+[gd_scene load_steps=14 format=4 uid="uid://dsuobl1l72y3j"]
 
 [ext_resource type="Script" uid="uid://3abkesatad3y" path="res://scoundrel/Scenes/Levels/tutorial.gd" id="1_hre80"]
 [ext_resource type="Texture2D" uid="uid://qryml5x2bd2m" path="res://scoundrel/Assets/Maps/components/pillar.png" id="3_0pv0c"]
@@ -8,6 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://b33qoo4u3as2" path="res://scoundrel/Assets/Maps/components/floor platform default.png" id="4_o42ll"]
 [ext_resource type="Texture2D" uid="uid://brjt2wc8ml2lq" path="res://scoundrel/Assets/Maps/components/white_box.png" id="4_plkny"]
 [ext_resource type="Shader" uid="uid://c2rytlparyotl" path="res://scoundrel/Assets/Shaders/blur.gdshader" id="4_t5e05"]
+[ext_resource type="Shader" uid="uid://dhukxf4exyqe4" path="res://scoundrel/Assets/Shaders/god_rays.gdshader" id="9_00b3l"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0pv0c"]
 texture = ExtResource("3_o42ll")
@@ -419,6 +420,22 @@ tile_size = Vector2i(64, 64)
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_0pv0c")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_miokm"]
+shader = ExtResource("9_00b3l")
+shader_parameter/angle = -0.3
+shader_parameter/position = -0.2
+shader_parameter/spread = 0.39600001881
+shader_parameter/cutoff = 0.1
+shader_parameter/falloff = 0.2
+shader_parameter/edge_fade = 0.850000040375
+shader_parameter/speed = 1.0
+shader_parameter/ray1_density = 8.0
+shader_parameter/ray2_density = 30.0
+shader_parameter/ray2_intensity = 0.3
+shader_parameter/color = Vector4(1, 0.9, 0.65, 0.8)
+shader_parameter/hdr = false
+shader_parameter/seed = 5.0
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nsi88"]
 shader = ExtResource("4_t5e05")
 shader_parameter/blur_amount = 0.906000138035
@@ -436,7 +453,6 @@ position = Vector2(2, 5)
 [node name="Collisions" type="Node2D" parent="."]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
-visible = false
 tile_map_data = PackedByteArray("AAAxAPv/AAAGAAYAAAAwAPv/AAAGAAYAAAAvAPv/AAAGAAYAAAAuAPv/AAAGAAYAAAAtAPv/AAAGAAYAAAAsAPv/AAAGAAYAAAArAPv/AAAGAAYAAAAqAPv/AAAGAAYAAAApAPv/AAAGAAYAAAAoAPv/AAAGAAYAAAAnAPv/AAAGAAYAAAAmAPv/AAAGAAYAAAAlAPv/AAAGAAYAAAAkAPv/AAAGAAYAAAAjAPv/AAAGAAYAAAAiAPv/AAAGAAYAAAAhAPv/AAAGAAYAAAAgAPv/AAAGAAYAAAAfAPv/AAAGAAYAAAAeAPv/AAAGAAYAAAAdAPv/AAAGAAYAAAAcAPv/AAAGAAYAAAAbAPv/AAAGAAYAAAAaAPv/AAAGAAYAAAAZAPv/AAAGAAYAAAAYAPv/AAAGAAYAAAAXAPv/AAAGAAYAAAAWAPv/AAAGAAYAAAAVAPv/AAAGAAYAAAAUAPv/AAAGAAYAAAATAPv/AAAGAAYAAAASAPv/AAAGAAYAAAARAPv/AAAGAAYAAAAQAPv/AAAGAAYAAAAPAPv/AAAGAAYAAAAOAPv/AAAGAAYAAAANAPv/AAAGAAYAAAAMAPv/AAAGAAYAAAALAPv/AAAGAAYAAAAKAPv/AAAGAAYAAAAJAPv/AAAGAAYAAAAIAPv/AAAGAAYAAAAHAPv/AAAGAAYAAAAGAPv/AAAGAAYAAAAFAPv/AAAGAAYAAAAEAPv/AAAGAAYAAAADAPv/AAAGAAYAAAACAPv/AAAGAAYAAAABAPv/AAAGAAYAAAAAAPv/AAAGAAYAAAD///v/AAAGAAYAAAD+//v/AAAGAAYAAAD9//v/AAAGAAYAAAD8//v/AAAGAAYAAAD7//v/AAAGAAYAAAD6//v/AAAGAAYAAAD5//v/AAAGAAYAAAD4//v/AAAGAAYAAAD3//v/AAAGAAYAAAD2//v/AAAGAAYAAAD1//v/AAAGAAYAAAD0//v/AAAGAAYAAADz//v/AAAGAAYAAADz//z/AAAGAAYAAADz//3/AAAGAAYAAADz//7/AAAGAAYAAADz////AAAGAAYAAADz/wAAAAAGAAYAAADz/wEAAAAGAAYAAADz/wIAAAAGAAYAAADz/wMAAAAGAAYAAADz/wQAAAAGAAYAAADz/wUAAAAGAAYAAADz/wYAAAAGAAYAAADz/wcAAAAGAAYAAADz/wgAAAAGAAYAAADz/wkAAAAGAAYAAAD0/wkAAAAGAAYAAAD1/wkAAAAGAAYAAAD2/wkAAAAGAAYAAAD3/wkAAAAGAAYAAAD4/wkAAAAGAAYAAAD5/wkAAAAGAAYAAAD6/wkAAAAGAAYAAAD7/wkAAAAGAAYAAAD8/wkAAAAGAAYAAAD9/wkAAAAGAAYAAAD+/wkAAAAGAAYAAAD//wkAAAAGAAYAAAAAAAkAAAAGAAYAAAABAAkAAAAGAAYAAAACAAkAAAAGAAYAAAADAAkAAAAGAAYAAAAEAAkAAAAGAAYAAAAFAAkAAAAGAAYAAAAGAAkAAAAGAAYAAAAHAAkAAAAGAAYAAAAIAAkAAAAGAAYAAAAJAAkAAAAGAAYAAAAKAAkAAAAGAAYAAAALAAkAAAAGAAYAAAAMAAkAAAAGAAYAAAANAAkAAAAGAAYAAAAOAAkAAAAGAAYAAAAPAAkAAAAGAAYAAAAQAAkAAAAGAAYAAAARAAkAAAAGAAYAAAASAAkAAAAGAAYAAAATAAkAAAAGAAYAAAAUAAkAAAAGAAYAAAAVAAkAAAAGAAYAAAAWAAkAAAAGAAYAAAAXAAkAAAAGAAYAAAAYAAkAAAAGAAYAAAAZAAkAAAAGAAYAAAAaAAkAAAAGAAYAAAAbAAkAAAAGAAYAAAAcAAkAAAAGAAYAAAAdAAkAAAAGAAYAAAAeAAkAAAAGAAYAAAAfAAkAAAAGAAYAAAAgAAkAAAAGAAYAAAAhAAkAAAAGAAYAAAAiAAkAAAAGAAYAAAAjAAkAAAAGAAYAAAAkAAkAAAAGAAYAAAAlAAkAAAAGAAYAAAAmAAkAAAAGAAYAAAAnAAkAAAAGAAYAAAAoAAkAAAAGAAYAAAApAAkAAAAGAAYAAAAqAAkAAAAGAAYAAAArAAkAAAAGAAYAAAAsAAkAAAAGAAYAAAAtAAkAAAAGAAYAAAAuAAkAAAAGAAYAAAAvAAkAAAAGAAYAAAAwAAkAAAAGAAYAAAAxAAkAAAAGAAYAAAAyAAkAAAAGAAYAAAAzAAkAAAAGAAYAAAA0AAkAAAAGAAYAAAA1AAkAAAAGAAYAAAA2AAkAAAAGAAYAAAA3AAkAAAAGAAYAAAA4AAkAAAAGAAYAAAA5AAkAAAAGAAYAAAAyAPv/AAAGAAYAAAAzAPv/AAAGAAYAAAA0APv/AAAGAAYAAAA1APv/AAAGAAYAAAA2APv/AAAGAAYAAAA3APv/AAAGAAYAAAA4APv/AAAGAAYAAAA5APv/AAAGAAYAAAA6AAkAAAAGAAYAAAA7AAkAAAAGAAYAAAA6APv/AAAGAAYAAAA7APv/AAAGAAYAAAA7APz/AAAGAAYAAAA7AP3/AAAGAAYAAAA7AP7/AAAGAAYAAAA7AP//AAAGAAYAAAA7AAAAAAAGAAYAAAA7AAEAAAAGAAYAAAA7AAIAAAAGAAYAAAA7AAMAAAAGAAYAAAA7AAQAAAAGAAYAAAA7AAUAAAAGAAYAAAA7AAYAAAAGAAYAAAA7AAcAAAAGAAYAAAA7AAgAAAAGAAYAAAA=")
 tile_set = SubResource("TileSet_plkny")
 
@@ -486,6 +502,13 @@ texture = ExtResource("3_0pv0c")
 position = Vector2(-8, -1924)
 texture = ExtResource("3_0pv0c")
 
+[node name="Godrays2" type="ColorRect" parent="Map/-3/Pillar4"]
+material = SubResource("ShaderMaterial_miokm")
+offset_left = -2406.213
+offset_top = -1644.7766
+offset_right = -581.2129
+offset_bottom = 180.22339
+
 [node name="Pillar5" type="Sprite2D" parent="Map/-3"]
 position = Vector2(-165.71423, 658.5714)
 scale = Vector2(0.76171875, 0.76171875)
@@ -503,6 +526,14 @@ texture = ExtResource("3_0pv0c")
 position = Vector2(3094.271, -1330.6373)
 scale = Vector2(1.3128206, 1.3128206)
 texture = ExtResource("4_nsi88")
+
+[node name="Godrays" type="ColorRect" parent="Map"]
+visible = false
+material = SubResource("ShaderMaterial_miokm")
+offset_left = -444.00003
+offset_top = -1219.0
+offset_right = 1381.0
+offset_bottom = 606.0
 
 [node name="-2" type="CanvasLayer" parent="Map"]
 layer = -2
@@ -670,3 +701,18 @@ texture = ExtResource("4_o42ll")
 [node name="Web3" type="Sprite2D" parent="Map/3/FloorPlatformDefault"]
 position = Vector2(-361.07684, 86.461136)
 texture = ExtResource("4_nsi88")
+
+[node name="Godrays2" type="ColorRect" parent="Map/3"]
+modulate = Color(1, 1, 1, 0.078431375)
+material = SubResource("ShaderMaterial_miokm")
+offset_left = -417.69238
+offset_top = -613.0769
+offset_right = 1407.3076
+offset_bottom = 1211.9231
+
+[node name="Godrays2" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_miokm")
+offset_left = 1694.0
+offset_top = -1229.0
+offset_right = 3519.0
+offset_bottom = 596.0

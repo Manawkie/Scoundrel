@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cjlu5xwi7suqn"]
+
+[ext_resource type="Script" uid="uid://dtolqebj0skrd" path="res://scoundrel/Scenes/Objects/Grapple_Hook/hook.gd" id="1_6r05k"]
+[ext_resource type="Texture2D" uid="uid://baeigdkx7wvml" path="res://scoundrel/Assets/Items/Hook/hook.png" id="2_aey6y"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_n4c63"]
+radius = 8.0
+height = 20.0
+
+[node name="Hook" type="Area2D"]
+script = ExtResource("1_6r05k")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-4, 1)
+scale = Vector2(0.20703125, 0.20703125)
+texture = ExtResource("2_aey6y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, -6)
+shape = SubResource("CapsuleShape2D_n4c63")

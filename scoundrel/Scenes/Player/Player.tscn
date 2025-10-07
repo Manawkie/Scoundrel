@@ -1,4 +1,4 @@
-[gd_scene load_steps=92 format=3 uid="uid://b3rufiiddxjst"]
+[gd_scene load_steps=96 format=3 uid="uid://b3rufiiddxjst"]
 
 [ext_resource type="Script" uid="uid://nfi6nq41v2x0" path="res://scoundrel/Scenes/Player/Player.gd" id="1_k2cw6"]
 [ext_resource type="Texture2D" uid="uid://drhd4gm4eisuv" path="res://scoundrel/Assets/Sprites/Kael/idle/kael frame0000.png" id="2_cpjyv"]
@@ -569,6 +569,12 @@ states/Fall/node = SubResource("AnimationNodeAnimation_mqrfe")
 states/Fall/position = Vector2(325, 100)
 transitions = ["Start", "Fall", SubResource("AnimationNodeStateMachineTransition_623d3")]
 
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_nsrfe"]
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_lvtt7"]
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_uskjb"]
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_rbvsx"]
 animation = &"Idle"
 
@@ -601,6 +607,8 @@ advance_mode = 2
 states/Run/node = SubResource("AnimationNodeAnimation_e32kc")
 states/Run/position = Vector2(319, 100)
 transitions = ["Start", "Run", SubResource("AnimationNodeStateMachineTransition_vsx6y")]
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_54ol7"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_m55n5"]
 animation = &"Turn"
@@ -645,13 +653,21 @@ states/Drop_Bomb/node = SubResource("AnimationNodeStateMachine_4qaxk")
 states/Drop_Bomb/position = Vector2(-78, -24)
 states/Fall/node = SubResource("AnimationNodeStateMachine_b8ljh")
 states/Fall/position = Vector2(339, 100)
+states/Grapple_Launch/node = SubResource("AnimationNodeStateMachine_nsrfe")
+states/Grapple_Launch/position = Vector2(-346, 42)
+states/Grapple_Swing/node = SubResource("AnimationNodeStateMachine_lvtt7")
+states/Grapple_Swing/position = Vector2(-346, -24)
+states/Gun_Fire/node = SubResource("AnimationNodeStateMachine_uskjb")
+states/Gun_Fire/position = Vector2(-191, 42)
 states/Idle/node = SubResource("AnimationNodeStateMachine_rbvsx")
 states/Idle/position = Vector2(237, 100)
 states/Jump/node = SubResource("AnimationNodeStateMachine_am71j")
 states/Jump/position = Vector2(445, 100)
 states/Run/node = SubResource("AnimationNodeStateMachine_de7d0")
 states/Run/position = Vector2(54, -24)
-states/Start/position = Vector2(128, 100)
+states/Scimitar_Attack/node = SubResource("AnimationNodeStateMachine_54ol7")
+states/Scimitar_Attack/position = Vector2(-30, 42)
+states/Start/position = Vector2(138, 100)
 states/Turn/node = SubResource("AnimationNodeStateMachine_m55n5")
 states/Turn/position = Vector2(319, 12)
 states/TurnBack/node = SubResource("AnimationNodeStateMachine_0i8hf")
@@ -659,7 +675,7 @@ states/TurnBack/position = Vector2(445, 12)
 states/Walk/node = SubResource("AnimationNodeStateMachine_0uxdv")
 states/Walk/position = Vector2(562, 100)
 transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_ca6fy")]
-graph_offset = Vector2(-450, -137)
+graph_offset = Vector2(-522, -66)
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_k2cw6")
