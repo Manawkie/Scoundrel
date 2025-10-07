@@ -26,7 +26,7 @@ func _ready() -> void:
 	# self.process_mode = Node.PROCESS_MODE_PHYSICS_INTERNAL # Use this if attached to CharacterBody2D script
 	pass
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	# 1. Get the mouse position relative to the center of the screen/viewport.
 	#    This gives us a vector pointing from the screen center to the cursor.
 	var mouse_pos_relative_to_center = get_viewport().get_mouse_position() - get_viewport_rect().size / 2

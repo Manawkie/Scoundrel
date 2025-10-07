@@ -6,7 +6,20 @@ extends CharacterBody2D
 @onready var anim_player = $AnimationPlayer
 @onready var eye_sprite = $EyeKael
 @onready var bomb_scene = preload("res://scoundrel/Scenes/Objects/Bomb.tscn")
+@onready var bullet_scene = preload("res://scoundrel/Scenes/Objects/Bullet/Bullet.tscn")
 var state_machine : AnimationNodeStateMachinePlayback
+
+enum WeaponState {SCIMITAR, GUN}
+
+# --- WEAPON CONSTANTS ---
+const SCIMITAR_COOLDOWN = 0.3 # Cooldown after melee attack finishes
+const GUN_COOLDOWN = 0.5 	  # Cooldown after gun attack finishes
+const SCIMITAR_ANIM_DURATION = 0.2
+const GUN_ANIM_DURATION = 0.3
+var current_weapon: WeaponState = WeaponState.SCIMITAR
+var is_attacking: bool = false
+var attack_timer: float = 0.0
+
 
 # --- DASH CONSTANTS ---
 const DASH_SPEED = 1600.0
@@ -17,16 +30,19 @@ const DASH_COOLDOWN = 0.5   # seconds until the player can dash again
 const BOMB_COOLDOWN = 1.0       # seconds until the player can drop another bomb (cooldown)
 const BOMB_ANIMATION_DURATION = 0.4 # NEW: seconds the drop animation lasts
 
+# --- MOVEMENT CONSTANTS ---
 const JUMP_VELOCITY = -1000.0 
 const SPEED = 200.0
 const RSPEED = 800.0
 const GRAVITY = 1800.0
 const FAST_FALL_SPEED = 1800.0
 
+
+# --- EYE CONSTANTS
 const MAX_PUPIL_MOVEMENT = 8.0 # Max distance the eye can shift in pixels
 const EYE_SMOOTH_FACTOR = 0.1 # How smoothly the eye tracks the cursor (0.0 to 1.0)
 
-# NEW AIR CONTROL CONSTANTS for momentum counter/steering
+# --- AIR CONTROL CONSTANTS
 const AIR_CONTROL_FACTOR = 0.6 # Multiplier for max horizontal speed in the air (e.g., 800 * 0.6 = 480)
 const AIR_ACCEL_RATE = 0.15    # The "smoothness" factor for changing direction in the air (0.0 to 1.0)
 
@@ -71,6 +87,7 @@ func _process(_delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	handle_dash(delta)
 	handle_bomb_drop(delta)
+	handle_weapon_combat(delta)
 	if is_dashing or is_dropping_bomb:
 		velocity.y = 0
 	else:
@@ -170,6 +187,10 @@ func anim_manager(state):
 			state_machine.travel("Dash")
 		"Drop_Bomb":
 			state_machine.travel("Drop_Bomb")
+		"Scimitar_Attack":
+			state_machine.travel("Scimitar_Attack")
+		"Gun_Fire":
+			state_machine.travel("Gun_Fire")
 	
 	current_anim_playing = state
 
@@ -192,6 +213,52 @@ func handle_eye_tracking():
 	# This creates the smooth "drag" or "lean" effect.
 	eye_sprite.position = eye_sprite.position.lerp(target_position, EYE_SMOOTH_FACTOR)
 
+func handle_weapon_combat(delta):
+	
+	if Input.is_action_just_pressed("select_gun"):
+		current_weapon = WeaponState.GUN
+		print("gun")
+		
+	if Input.is_action_just_pressed("select_scimitar"):
+		current_weapon = WeaponState.SCIMITAR
+		print("scimitar")
+	
+	if Input.is_action_just_pressed("fire") and not is_attacking:
+		start_attack()
+		
+	if is_attacking:
+		attack_timer -= delta
+		# End of the animation/attack phase
+		if attack_timer <= 0:
+			end_attack()
+	# Else: the timer acts as a simple cooldown until attack_timer <= 0
+
+func start_attack():
+	is_attacking = true
+	
+	match current_weapon:
+		WeaponState.SCIMITAR:
+			attack_timer = SCIMITAR_ANIM_DURATION + SCIMITAR_COOLDOWN
+			
+		WeaponState.GUN:
+			attack_timer = GUN_ANIM_DURATION + GUN_COOLDOWN
+			# NEW LOGIC: Calculate aim vector
+			var mouse_pos = get_global_mouse_position()
+			var aim_vector = (mouse_pos - global_position).normalized()
+			
+			var projectile = bullet_scene.instantiate()
+			get_tree().root.add_child(projectile)
+			
+			projectile.spawner = self
+			projectile.global_position = global_position 
+			
+			# Pass the full aim vector instead of just direction
+			if projectile.has_method("set_aim_vector"):
+				projectile.set_aim_vector(aim_vector)
+	
+func end_attack():
+	is_attacking = false
+
 func handle_bomb_drop(delta):
 	if Input.is_action_just_pressed("drop_bomb") and can_drop_bomb: 
 		start_bomb_drop()
@@ -204,8 +271,10 @@ func handle_bomb_drop(delta):
 		if bomb_timer <= 0:
 			
 			var bomb_instance = bomb_scene.instantiate()
-			bomb_instance.global_position = global_position
 			get_tree().current_scene.add_child(bomb_instance)
+			bomb_instance.global_position = global_position + Vector2(0, 10) 
+			bomb_instance.apply_initial_impulse(velocity)
+			
 			
 			end_bomb_animation()
 			
@@ -228,7 +297,7 @@ func end_bomb_animation():
 func handle_dash(delta):
 	if Input.is_action_just_pressed("dash") and can_dash and not is_dashing:
 		start_dash()
-		
+
 	if is_dashing:
 		dash_timer -= delta
 		

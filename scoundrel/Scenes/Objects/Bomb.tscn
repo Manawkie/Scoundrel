@@ -21,13 +21,13 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("5_s7qod")
 }],
-"loop": true,
+"loop": false,
 "name": &"bomb",
-"speed": 3.0
+"speed": 2.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hc5p7"]
-radius = 28.0
+radius = 27.018513
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_nn6mt"]
 particle_flag_disable_z = true
@@ -49,8 +49,7 @@ turbulence_noise_strength = 6.66
 turbulence_noise_scale = 9.19
 sub_emitter_keep_velocity = true
 
-[node name="Bomb" type="Area2D"]
-gravity_space_override = 1
+[node name="Bomb" type="RigidBody2D"]
 script = ExtResource("1_nn6mt")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -58,14 +57,22 @@ position = Vector2(7, -9)
 scale = Vector2(0.39453125, 0.39453125)
 sprite_frames = SubResource("SpriteFrames_4g5lt")
 animation = &"bomb"
-frame_progress = 0.73425645
+frame = 1
+frame_progress = 0.03791505
 
 [node name="Timer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 2.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 2)
 shape = SubResource("CircleShape2D_hc5p7")
+one_way_collision_margin = 16.4
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
 emitting = false
+lifetime = 2.0
+one_shot = true
 trail_enabled = true
+trail_lifetime = 1.5
 process_material = SubResource("ParticleProcessMaterial_nn6mt")
