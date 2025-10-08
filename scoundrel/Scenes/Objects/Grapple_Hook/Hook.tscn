@@ -18,3 +18,10 @@ texture = ExtResource("2_aey6y")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(1, -6)
 shape = SubResource("CapsuleShape2D_n4c63")
+
+[node name="GrappleLine" type="Line2D" parent="."]
+position = Vector2(-23, 4)
+points = PackedVector2Array(25, -12)
+width = 5.0
+default_color = Color(0, 0, 0, 1)
+texture_mode = 1

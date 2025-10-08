@@ -39,7 +39,7 @@ const JUMP_VELOCITY = -1000.0
 const SPEED = 200.0
 const RSPEED = 800.0
 const GRAVITY = 1800.0
-const FAST_FALL_SPEED = 1800.0
+const FAST_FALL_SPEED = 1200.0
 
 # --- EYE CONSTANTS
 const MAX_PUPIL_MOVEMENT = 8.0 # Max distance the eye can shift in pixels
@@ -103,19 +103,22 @@ func _process(_delta: float) -> void:
 	handle_eye_tracking()
 
 func _physics_process(delta: float) -> void:
+	var is_grounded_and_hooked = is_hooked and is_on_floor()
 	handle_dash(delta)
 	handle_bomb_drop(delta)
 	handle_weapon_combat(delta)
 	handle_hook_launch(delta)
+	if is_hooked:
+		handle_rope_control(delta)
 	if is_dashing or is_dropping_bomb:
 		velocity.y = 0
 	elif is_grappling and not is_hooked:
 		velocity.y = 0
 		velocity.x = lerp(velocity.x, 0.0, 0.02)
-	elif is_hooked:
+	elif is_hooked and not is_grounded_and_hooked:
 		handle_swing_physics(delta)
 	else:
-		player_movement_x()
+		player_movement_x(delta)
 		player_movement_y()
 		apply_gravity(delta)
 	update_sprite_flip()
@@ -125,7 +128,7 @@ func _physics_process(delta: float) -> void:
 
 func player_movement_y():
 	
-	if is_grappling:
+	if is_grappling and not is_on_floor(): 
 		return
 	
 	if Input.is_action_just_pressed("jump") and is_on_floor():
@@ -140,22 +143,55 @@ func player_movement_y():
 		else:
 			run_toggle = true
 
-func player_movement_x():
+func player_movement_x(delta: float):
 	direction = Input.get_axis("walk_left", "walk_right")
 	
-	if is_dashing or is_grappling:
-		return 
+	if is_dashing: 
+		return
 		
 	var target_speed = SPEED
 	
 	if run_toggle == true:
 		target_speed = RSPEED
 		
+	var target_vel_x = direction * target_speed
+	
 	if is_on_floor():
 		
-		velocity.x = direction * target_speed
+		if is_hooked:
+			# Logic to prevent running past the maximum rope length
+			if direction != 0:
+				
+				# 1. Predict the position based on the desired velocity
+				var proposed_pos_x = global_position.x + target_vel_x * delta
+				var proposed_pos = Vector2(proposed_pos_x, global_position.y) 
+				
+				var distance_to_hook = proposed_pos.distance_to(hook_point)
+				
+				if distance_to_hook > current_rope_length:
+					# Player is trying to move outside the allowed radius
+					
+					var hook_dir_x = sign(hook_point.x - global_position.x)
+					var move_direction_is_away = sign(direction) != hook_dir_x
+
+					# Only restrict velocity if the input is actively pulling away
+					if move_direction_is_away:
+						velocity.x = 0
+					else:
+						# Allow movement towards the hook point, even if currently at max length
+						velocity.x = target_vel_x
+				else:
+					# Within the rope limit, allow full movement
+					velocity.x = target_vel_x
+			else:
+				# Idle on floor, hooked: stop horizontal movement
+				velocity.x = 0
+		else:
+			# Standard grounded movement (no hook)
+			velocity.x = target_vel_x
+			
 	elif direction != 0:
-		# to maintain momentum if moving in a greater speed 
+		# Air control logic
 		var target_max_speed = target_speed * AIR_CONTROL_FACTOR
 		var desired_target_vel = direction * target_max_speed
 		var input_matches_momentum = sign(direction) == sign(velocity.x)
@@ -172,22 +208,34 @@ func player_movement_x():
 func update_sprite_flip():
 	var face_direction = 0.0
 
-	# Priority 1: Swinging or Airborne
-	if is_hooked or not is_on_floor():
+	# Priority 1: Dashing (Sprite faces the direction of the dash)
+	if is_dashing:
+		face_direction = dash_direction
+	
+	# Priority 2: Swinging or Airborne (Sprite faces direction of movement/momentum)
+	elif is_hooked or not is_on_floor():
 		# When swinging or airborne, base direction on horizontal velocity (momentum).
 		# Use a small threshold (e.g., 5.0) to avoid jitter when velocity is near zero.
 		if abs(velocity.x) > 5.0:
 			face_direction = sign(velocity.x)
 	
-	# Priority 2: Normal Grounded Movement
+	# Priority 3: Normal Grounded Movement (Sprite faces direction of input)
 	elif direction != 0:
 		# When on floor (and not swinging), base direction on input.
 		face_direction = direction
+	
+	# Priority 4: Idle (Sprite faces the last direction of movement)
+	else:
+		face_direction = last_direction
 
 	# Apply the flip and update last_direction only if a distinct direction is found
 	if face_direction != 0:
 		sprite.flip_h = face_direction < 0
-		last_direction = face_direction
+		# last_direction is only updated by player_movement_x, not here, 
+		# unless we are dashing, where last_direction should be updated in start_dash().
+		# Keeping original last_direction update for robustness:
+		if direction != 0:
+			last_direction = direction
 
 func apply_gravity(delta: float):
 	if not is_on_floor():
@@ -197,10 +245,6 @@ func apply_gravity(delta: float):
 			velocity.y = 0
 
 func determine_animation_state():
-	if is_grappling:
-		current_state = "Grapple_Swing" if is_hooked else "Grapple_Launch"
-		return
-		
 	if is_attacking:
 		match current_weapon:
 			WeaponState.SCIMITAR:
@@ -215,6 +259,13 @@ func determine_animation_state():
 		
 	if is_dropping_bomb:
 		current_state = "Drop_Bomb"
+		return
+	if is_grappling and not is_hooked:
+		current_state = "Grapple_Launch"
+		return
+		
+	if is_hooked and not is_on_floor():
+		current_state = "Grapple_Swing"
 		return
 		
 	if not is_on_floor():
@@ -300,13 +351,13 @@ func handle_weapon_combat(delta):
 			current_weapon = WeaponState.GRAPPLE_HOOK
 			print("grapple hook")
 	
-	if Input.is_action_just_pressed("fire") and not is_attacking:
+	if Input.is_action_just_pressed("fire"):
 		if current_weapon == WeaponState.GRAPPLE_HOOK and not is_grappling:
 			start_grapple()
 		elif not is_grappling and not is_attacking:
 			start_attack()
 	
-	if is_grappling and Input.is_action_just_pressed("jump"): 
+	if is_grappling and not is_on_floor() and Input.is_action_just_pressed("jump"): 
 		retract_hook(is_hooked)
 		
 	if is_attacking:
@@ -346,17 +397,22 @@ func start_grapple():
 	is_grappling = true
 	is_hooked = false 
 	velocity.y = 0 
+	velocity.x = 0
 	
 	var mouse_pos = get_global_mouse_position()
 	hook_vector = (mouse_pos - global_position).normalized()
-	
+
 	current_hook_instance = grapple_hook_scene.instantiate() 
 	get_tree().root.add_child(current_hook_instance)
-	
+
 	if current_hook_instance.has_method("set_grapple_mode"):
 		# Assuming the projectile script has a function to set its mode and speed
 		current_hook_instance.set_grapple_mode(hook_vector, HOOK_SPEED, self)
-	
+
+	# NEW CONNECTION: Tell the hook instance who the player is, so the Line2D can track.
+	if current_hook_instance.has_method("set_player"):
+		current_hook_instance.set_player(self)
+
 	current_hook_instance.spawner = self 
 	current_hook_instance.global_position = global_position
 
@@ -380,11 +436,6 @@ func on_hook_hit(hit_point: Vector2):
 	initial_rope_length = initial_distance
 	current_rope_length = initial_distance
 	
-	# Destroy the moving hook instance
-	if is_instance_valid(current_hook_instance):
-		current_hook_instance.queue_free()
-		current_hook_instance = null
-		
 	# Ensure the player starts with a velocity suitable for swinging
 	if velocity.length() < 100: # Give a minimum outward swing speed if stationary
 		velocity = hook_vector * 500
@@ -392,18 +443,10 @@ func on_hook_hit(hit_point: Vector2):
 func handle_swing_physics(delta):
 	if not is_hooked:
 		return
+		
+	# Rope length is now managed by handle_rope_control, which runs regardless of grounded status.
+	
 	var rope_dir = (hook_point - global_position).normalized()
-	
-	if Input.is_action_pressed("fire"):
-		current_rope_length = max(current_rope_length - GRAPPLE_PULL_ACCEL * delta * 0.075, 50.0)
-		var pull_vector = rope_dir * GRAPPLE_PULL_ACCEL * delta * 0.5
-		velocity += pull_vector
-	else:
-		current_rope_length = initial_rope_length
-	
-	if is_on_floor():
-		velocity.x = 0
-		return
 	
 	velocity.y += GRAVITY * delta
 	
@@ -412,17 +455,36 @@ func handle_swing_physics(delta):
 	var delta_to_hook = hook_point - global_position
 	var separation = delta_to_hook.length() - max_length
 	
+	# Resolve constraint by adjusting velocity tangentially
 	if separation > 0:
 		var tangent_vector = Vector2(-rope_dir.y, rope_dir.x)
 		var tangential_velocity = velocity.dot(tangent_vector) * tangent_vector
 		velocity = tangential_velocity
 		
+		# Teleport slightly back to the rope for stability
 		global_position += rope_dir * separation * 0.1
 		
+	# Apply tangential acceleration from player input while swinging
 	var input_direction = Input.get_axis("walk_left", "walk_right")
 	if input_direction != 0:
 		var tangent_vector = Vector2(-rope_dir.y, rope_dir.x) * input_direction
 		velocity += tangent_vector * 100.0 * delta
+
+func handle_rope_control(delta):
+	# This function runs every frame if the hook is active (is_hooked = true)
+	if not is_hooked:
+		return
+
+	if Input.is_action_pressed("fire"):
+		var rope_dir = (hook_point - global_position).normalized()
+		
+		# 1. Shorten the rope length (pulling)
+		current_rope_length = max(current_rope_length - GRAPPLE_PULL_ACCEL * delta * 0.075, 50.0)
+		var pull_vector = rope_dir * GRAPPLE_PULL_ACCEL * delta * 0.5
+		velocity += pull_vector
+	else:
+		# If fire is not pressed, the rope snaps back to its initial length.
+		current_rope_length = initial_rope_length
 
 func retract_hook(apply_jump=false):
 	# Allow momentum to continue but reset grapple state
@@ -504,16 +566,29 @@ func handle_dash(delta):
 			dash_timer = 0 
 
 func start_dash():
+	# --- NEW LOGIC: Cancel Grapple if Dashing Out of a Swing ---
+	if is_hooked:
+		# Cancel the grapple first, passing false to prevent an extra upward jump velocity.
+		retract_hook(false)
 
 	is_dashing = true
 	can_dash = false
 	dash_timer = DASH_DURATION
 	
+	# Determine dash direction:
+	# Priority 1: Current horizontal input (A/D)
 	if direction != 0:
-		dash_direction = sign(direction) 
+		dash_direction = direction
+	# Priority 2: Momentum (if no input, dash in the direction the player is moving)
+	elif abs(velocity.x) > 5.0:
+		dash_direction = sign(velocity.x)
+	# Priority 3: Last facing direction (default fall-back)
 	else:
-		dash_direction = sign(last_direction) 
+		dash_direction = last_direction
 		
+	# Ensure last_direction tracks the dash direction
+	last_direction = dash_direction
+
 func end_dash():
 	is_dashing = false
 	dash_timer = DASH_COOLDOWN

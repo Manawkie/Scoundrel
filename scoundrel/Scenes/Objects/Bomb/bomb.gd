@@ -40,7 +40,6 @@ func apply_initial_impulse(player_vel: Vector2):
 func _on_Timer_timeout():
 	# This function is now guaranteed to run when the timer finishes
 	explode()
-	print("Timer expired. Calling explode.")
 
 func _on_body_entered(body: Node2D):
 	# Collision trigger for immediate explosion (e.g., hitting the enemy/wall)
