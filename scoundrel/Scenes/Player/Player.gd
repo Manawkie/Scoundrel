@@ -40,14 +40,17 @@ const SPEED = 200.0
 const RSPEED = 800.0
 const GRAVITY = 1800.0
 const FAST_FALL_SPEED = 1200.0
+const GROUND_ACCELERATION_FACTOR = 0.1
 
 # --- EYE CONSTANTS
 const MAX_PUPIL_MOVEMENT = 8.0 # Max distance the eye can shift in pixels
 const EYE_SMOOTH_FACTOR = 0.1 # How smoothly the eye tracks the cursor (0.0 to 1.0)
 
 # --- AIR CONTROL CONSTANTS
-const AIR_CONTROL_FACTOR = 0.6 # Multiplier for max horizontal speed in the air (e.g., 800 * 0.6 = 480)
+const AIR_CONTROL_FACTOR = 0.2 # Multiplier for max horizontal speed in the air (e.g., 800 * 0.6 = 480)
 const AIR_ACCEL_RATE = 0.15    # The "smoothness" factor for changing direction in the air (0.0 to 1.0)
+const AIR_MOMENTUM_IDLE_DECAY = 0.1 # momentum decay
+const AIR_MOMENTUM_ACTIVE_DECAY = 0.02 # momentum decay
 
 # --- MOVEMENT  VARIABLE ---
 var direction: float = 0.0
@@ -146,7 +149,7 @@ func player_movement_y():
 func player_movement_x(delta: float):
 	direction = Input.get_axis("walk_left", "walk_right")
 	
-	if is_dashing: 
+	if is_dashing:
 		return
 		
 	var target_speed = SPEED
@@ -164,7 +167,7 @@ func player_movement_x(delta: float):
 				
 				# 1. Predict the position based on the desired velocity
 				var proposed_pos_x = global_position.x + target_vel_x * delta
-				var proposed_pos = Vector2(proposed_pos_x, global_position.y) 
+				var proposed_pos = Vector2(proposed_pos_x, global_position.y)
 				
 				var distance_to_hook = proposed_pos.distance_to(hook_point)
 				
@@ -176,32 +179,40 @@ func player_movement_x(delta: float):
 
 					# Only restrict velocity if the input is actively pulling away
 					if move_direction_is_away:
-						velocity.x = 0
+						velocity.x = lerp(velocity.x, 0.0, GROUND_ACCELERATION_FACTOR)
 					else:
-						# Allow movement towards the hook point, even if currently at max length
-						velocity.x = target_vel_x
+						# Allow movement towards the hook point, using smooth acceleration
+						velocity.x = lerp(velocity.x, target_vel_x, GROUND_ACCELERATION_FACTOR)
 				else:
-					# Within the rope limit, allow full movement
-					velocity.x = target_vel_x
+					# Within the rope limit, allow full movement with smooth acceleration
+					velocity.x = lerp(velocity.x, target_vel_x, GROUND_ACCELERATION_FACTOR)
 			else:
-				# Idle on floor, hooked: stop horizontal movement
-				velocity.x = 0
+				# Idle on floor, hooked: stop horizontal movement smoothly
+				velocity.x = lerp(velocity.x, 0.0, GROUND_ACCELERATION_FACTOR)
 		else:
-			# Standard grounded movement (no hook)
-			velocity.x = target_vel_x
+			# Standard grounded movement (no hook) - Use lerp for gradual acceleration/deceleration
+			velocity.x = lerp(velocity.x, target_vel_x, GROUND_ACCELERATION_FACTOR)
 			
-	elif direction != 0:
-		# Air control logic
-		var target_max_speed = target_speed * AIR_CONTROL_FACTOR
-		var desired_target_vel = direction * target_max_speed
-		var input_matches_momentum = sign(direction) == sign(velocity.x)
-		var is_overspeeding = abs(velocity.x) > target_max_speed
-		
-		if is_overspeeding and input_matches_momentum:
-			pass
+	elif not is_on_floor():
+		# Air control logic (now including active decay)
+		if direction != 0:
+			# Apply air acceleration/direction change
+			var target_max_speed = target_speed * AIR_CONTROL_FACTOR
+			var desired_target_vel = direction * target_max_speed
+			var input_matches_momentum = sign(direction) == sign(velocity.x)
+			var is_overspeeding = abs(velocity.x) > target_max_speed
+			
+			if is_overspeeding and input_matches_momentum:
+				# Momentum decay when input is active, but player is moving faster than max air speed.
+				# This slows down the momentum gained from running off a ledge.
+				velocity.x = lerp(velocity.x, desired_target_vel, AIR_MOMENTUM_ACTIVE_DECAY)
+			else:
+				# Air acceleration towards the target speed, or maintaining momentum if slower than target_max_speed
+				velocity.x = lerp(velocity.x, desired_target_vel, AIR_ACCEL_RATE)
 		else:
-			velocity.x = lerp(velocity.x, desired_target_vel, AIR_ACCEL_RATE)
-
+			# Apply air momentum decay (when no input is pressed - high decay)
+			velocity.x = lerp(velocity.x, 0.0, AIR_MOMENTUM_IDLE_DECAY)
+			
 	if direction != 0:
 			last_direction = direction
 

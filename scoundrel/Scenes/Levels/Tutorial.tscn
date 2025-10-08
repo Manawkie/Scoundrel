@@ -10,7 +10,7 @@
 [ext_resource type="Shader" uid="uid://c2rytlparyotl" path="res://scoundrel/Assets/Shaders/blur.gdshader" id="4_t5e05"]
 [ext_resource type="Shader" uid="uid://dhukxf4exyqe4" path="res://scoundrel/Assets/Shaders/god_rays.gdshader" id="9_00b3l"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0pv0c"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_00b3l"]
 texture = ExtResource("3_o42ll")
 texture_region_size = Vector2i(64, 64)
 5:5/0 = 0
@@ -418,7 +418,7 @@ texture_region_size = Vector2i(64, 64)
 [sub_resource type="TileSet" id="TileSet_plkny"]
 tile_size = Vector2i(64, 64)
 physics_layer_0/collision_layer = 1
-sources/0 = SubResource("TileSetAtlasSource_0pv0c")
+sources/0 = SubResource("TileSetAtlasSource_00b3l")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_miokm"]
 shader = ExtResource("9_00b3l")
@@ -449,8 +449,6 @@ script = ExtResource("1_hre80")
 position = Vector2(2, 5)
 
 [node name="Layout" type="Node2D" parent="."]
-
-[node name="Collisions" type="Node2D" parent="."]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 visible = false
