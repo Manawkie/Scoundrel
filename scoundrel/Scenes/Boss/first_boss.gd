@@ -11,6 +11,9 @@ enum BossState {FULL_HEALTH, HALF_HEALTH, QUARTER_HEALTH}
 
 # --- BOSS VARIABLES ---
 var hp = 100
+var melee_range = false
+var projectile_range = true
+
 
 func _ready() -> void:
 	anim_tree.active = true
@@ -20,31 +23,18 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	#sprite_direction()
-	pass
+	sprite_direction()
 	
-
+	
 
 
 func sprite_direction():
 	if player.global_position.x > global_position.x:
 		# Player is on the right
-		sprite.flip_h = false
+		sprite.flip_h = true
 	else:
 		# Player is on the left
-		sprite.flip_h = true
-
-
-
-
-
-
-
-
-
-
-
-
+		sprite.flip_h = false
 
 
 func decrease_hp(damage):

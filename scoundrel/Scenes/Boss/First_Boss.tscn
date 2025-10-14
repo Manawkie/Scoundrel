@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://c4y28h8oxriki"]
+[gd_scene load_steps=25 format=3 uid="uid://c4y28h8oxriki"]
 
 [ext_resource type="Texture2D" uid="uid://cfoyo8qx5nbj" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0000.png" id="1_o2r78"]
 [ext_resource type="Script" uid="uid://gsw17mfo080b" path="res://scoundrel/Scenes/Boss/first_boss.gd" id="1_qo5c4"]
@@ -9,6 +9,10 @@
 [ext_resource type="Texture2D" uid="uid://dluta36mvi7tx" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0005.png" id="6_20ilw"]
 [ext_resource type="Texture2D" uid="uid://dqcs6juj8sego" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0006.png" id="7_fbr5v"]
 [ext_resource type="Texture2D" uid="uid://drnvgvneh65ot" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0007.png" id="8_eamgw"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qo5c4"]
+atlas = ExtResource("1_o2r78")
+region = Rect2(0, 0, 1920, 1080)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_3pf6d"]
 animations = [{
@@ -36,6 +40,12 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("8_eamgw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qo5c4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_o2r78")
 }],
 "loop": true,
 "name": &"idle",
@@ -139,16 +149,21 @@ states/Start/position = Vector2(117, 122)
 transitions = ["Dead", "End", SubResource("AnimationNodeStateMachineTransition_fbr5v"), "Start", "Idle", SubResource("AnimationNodeStateMachineTransition_eamgw")]
 graph_offset = Vector2(-176, -114)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_qo5c4"]
+radius = 629.15576
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_7xoiu"]
+radius = 2005.9277
+
 [node name="FirstBoss" type="CharacterBody2D"]
 script = ExtResource("1_qo5c4")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(-320, -91)
 sprite_frames = SubResource("SpriteFrames_3pf6d")
 animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(289, -345)
+position = Vector2(-36, -299)
 shape = SubResource("CapsuleShape2D_qclql")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -157,6 +172,21 @@ libraries = {
 }
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
+active = false
 tree_root = SubResource("AnimationNodeStateMachine_qo5c4")
 anim_player = NodePath("../AnimationPlayer")
 parameters/conditions/is_dead = false
+
+[node name="MeleeRange" type="Area2D" parent="."]
+visible = false
+position = Vector2(322, 44)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MeleeRange"]
+shape = SubResource("CircleShape2D_qo5c4")
+
+[node name="ProjectileRange" type="Area2D" parent="."]
+visible = false
+position = Vector2(319, 47)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ProjectileRange"]
+shape = SubResource("CircleShape2D_7xoiu")
