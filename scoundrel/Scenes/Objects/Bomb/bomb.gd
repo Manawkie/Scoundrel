@@ -53,6 +53,7 @@ func explode():
 		return
 	has_exploded = true
 	linear_velocity = Vector2.ZERO
+	angular_velocity = 0
 	
 	print("Explosion logic running.")
 	_sprite.visible = false

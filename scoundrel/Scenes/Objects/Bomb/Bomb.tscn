@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://18bresjr6auj"]
+[gd_scene load_steps=11 format=3 uid="uid://18bresjr6auj"]
 
 [ext_resource type="Script" uid="uid://dcm404v6ey8m" path="res://scoundrel/Scenes/Objects/Bomb/bomb.gd" id="1_nn6mt"]
 [ext_resource type="Texture2D" uid="uid://chcpxgxkxfe5" path="res://scoundrel/Assets/Items/Bomb/bomb_frame0000.png" id="2_4wmlw"]
@@ -29,25 +29,26 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_hc5p7"]
 radius = 27.018513
 
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_nn6mt"]
+[sub_resource type="Gradient" id="Gradient_8sb7j"]
+offsets = PackedFloat32Array(0, 0.31034482)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_gr6qd"]
+gradient = SubResource("Gradient_8sb7j")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_8sb7j"]
 particle_flag_disable_z = true
-emission_shape = 2
-emission_sphere_radius = 26.6
-inherit_velocity_ratio = 0.055
-spread = 70.2
+emission_shape = 1
+emission_sphere_radius = 6.12
+spread = 180.0
+initial_velocity_min = 80.0
+initial_velocity_max = 240.0
 orbit_velocity_min = 9.49949e-08
 orbit_velocity_max = 9.49949e-08
-radial_velocity_min = -2.2351742e-05
-radial_velocity_max = -2.2351742e-05
-gravity = Vector3(0, 98, 0)
-scale_min = 2.0
-scale_max = 2.0
-hue_variation_min = 0.16999997
-hue_variation_max = 0.39999998
-turbulence_enabled = true
-turbulence_noise_strength = 6.66
-turbulence_noise_scale = 9.19
-sub_emitter_keep_velocity = true
+gravity = Vector3(0, 0, 0)
+scale_min = 39.28
+scale_max = 39.28
+color_ramp = SubResource("GradientTexture1D_gr6qd")
 
 [node name="Bomb" type="RigidBody2D"]
 script = ExtResource("1_nn6mt")
@@ -71,8 +72,8 @@ one_way_collision_margin = 16.4
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
 emitting = false
-lifetime = 2.0
+amount = 20
+lifetime = 2.5
 one_shot = true
-trail_enabled = true
-trail_lifetime = 1.5
-process_material = SubResource("ParticleProcessMaterial_nn6mt")
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_8sb7j")

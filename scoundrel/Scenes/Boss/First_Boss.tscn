@@ -1,7 +1,8 @@
-[gd_scene load_steps=25 format=3 uid="uid://c4y28h8oxriki"]
+[gd_scene load_steps=28 format=3 uid="uid://c4y28h8oxriki"]
 
 [ext_resource type="Texture2D" uid="uid://cfoyo8qx5nbj" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0000.png" id="1_o2r78"]
 [ext_resource type="Script" uid="uid://gsw17mfo080b" path="res://scoundrel/Scenes/Boss/first_boss.gd" id="1_qo5c4"]
+[ext_resource type="PackedScene" uid="uid://x3d7jq54pl5k" path="res://scoundrel/Scenes/Boss/Rock.tscn" id="2_7xoiu"]
 [ext_resource type="Texture2D" uid="uid://cufu5ilv5cs0x" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0001.png" id="2_qo5c4"]
 [ext_resource type="Texture2D" uid="uid://d0yhnt5wr6lra" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0002.png" id="3_7xoiu"]
 [ext_resource type="Texture2D" uid="uid://ddvmcih0ud4u1" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0003.png" id="4_isih2"]
@@ -52,9 +53,8 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qclql"]
-radius = 67.0
-height = 146.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qo5c4"]
+size = Vector2(352, 301)
 
 [sub_resource type="Animation" id="Animation_qo5c4"]
 resource_name = "Idle"
@@ -132,6 +132,12 @@ states/Idle/node = SubResource("AnimationNodeAnimation_qo5c4")
 states/Idle/position = Vector2(387, 101)
 transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_7xoiu")]
 
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_7xoiu"]
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_isih2"]
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_fbr5v"]
+
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_fbr5v"]
 switch_mode = 2
 advance_mode = 2
@@ -142,29 +148,34 @@ advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_qo5c4"]
 states/Dead/node = SubResource("AnimationNodeStateMachine_bqqb8")
-states/Dead/position = Vector2(746, 100)
+states/Dead/position = Vector2(730, 188)
+states/End/position = Vector2(874, 188)
 states/Idle/node = SubResource("AnimationNodeStateMachine_20ilw")
-states/Idle/position = Vector2(258, 122)
-states/Start/position = Vector2(117, 122)
+states/Idle/position = Vector2(188, 188)
+states/Melee_Attacks/node = SubResource("AnimationNodeStateMachine_7xoiu")
+states/Melee_Attacks/position = Vector2(332, 323)
+states/Range_Attacks/node = SubResource("AnimationNodeStateMachine_isih2")
+states/Range_Attacks/position = Vector2(555, 323)
+states/Start/position = Vector2(53, 188)
+states/Vulnerable/node = SubResource("AnimationNodeStateMachine_fbr5v")
+states/Vulnerable/position = Vector2(332, 60)
 transitions = ["Dead", "End", SubResource("AnimationNodeStateMachineTransition_fbr5v"), "Start", "Idle", SubResource("AnimationNodeStateMachineTransition_eamgw")]
-graph_offset = Vector2(-176, -114)
+graph_offset = Vector2(-105, -75)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qo5c4"]
-radius = 629.15576
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_7xoiu"]
-radius = 2005.9277
+radius = 889.0276
 
 [node name="FirstBoss" type="CharacterBody2D"]
 script = ExtResource("1_qo5c4")
+rock_scene = ExtResource("2_7xoiu")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_3pf6d")
 animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-36, -299)
-shape = SubResource("CapsuleShape2D_qclql")
+position = Vector2(-21, -285.5)
+shape = SubResource("RectangleShape2D_qo5c4")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -178,15 +189,12 @@ anim_player = NodePath("../AnimationPlayer")
 parameters/conditions/is_dead = false
 
 [node name="MeleeRange" type="Area2D" parent="."]
-visible = false
-position = Vector2(322, 44)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MeleeRange"]
 shape = SubResource("CircleShape2D_qo5c4")
 
-[node name="ProjectileRange" type="Area2D" parent="."]
-visible = false
-position = Vector2(319, 47)
+[node name="RockSpawnPoint" type="Node2D" parent="."]
+position = Vector2(0, 540)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ProjectileRange"]
-shape = SubResource("CircleShape2D_7xoiu")
+[connection signal="body_entered" from="MeleeRange" to="." method="_on_melee_range_entered"]
+[connection signal="body_exited" from="MeleeRange" to="." method="_on_melee_range_exited"]

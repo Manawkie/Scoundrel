@@ -26,7 +26,7 @@ func set_grapple_mode(aim_vector: Vector2, speed: float, player: CharacterBody2D
 	spawner = player
 
 	# Set up the line visually
-	line.width = 2.0
+	line.width = 10.0
 	line.default_color = Color(0.9, 0.9, 0.9)# light gray rope
 	line.clear_points()
 	

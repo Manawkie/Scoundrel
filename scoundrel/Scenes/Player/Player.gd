@@ -21,7 +21,7 @@ const GUN_ANIM_DURATION = 0.3
 # --- GRAPPLE HOOK CONSTANTS ---
 const HOOK_SPEED = 2000.0       # Speed the hook travels
 const MAX_HOOK_LENGTH = 1500.0   # Max distance the hook can reach
-const GRAPPLE_PULL_ACCEL = 4000.0 # Acceleration when pulling towards the hook point
+const GRAPPLE_PULL_ACCEL = 8000.0 # Acceleration when pulling towards the hook point
 const GRAPPLE_COOLDOWN = 0.5    # Cooldown after hook retraction
 
 # --- DASH CONSTANTS ---
