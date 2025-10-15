@@ -1,10 +1,11 @@
-[gd_scene load_steps=28 format=3 uid="uid://c4y28h8oxriki"]
+[gd_scene load_steps=29 format=3 uid="uid://c4y28h8oxriki"]
 
 [ext_resource type="Texture2D" uid="uid://cfoyo8qx5nbj" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0000.png" id="1_o2r78"]
 [ext_resource type="Script" uid="uid://gsw17mfo080b" path="res://scoundrel/Scenes/Boss/first_boss.gd" id="1_qo5c4"]
 [ext_resource type="PackedScene" uid="uid://x3d7jq54pl5k" path="res://scoundrel/Scenes/Boss/Rock.tscn" id="2_7xoiu"]
 [ext_resource type="Texture2D" uid="uid://cufu5ilv5cs0x" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0001.png" id="2_qo5c4"]
 [ext_resource type="Texture2D" uid="uid://d0yhnt5wr6lra" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0002.png" id="3_7xoiu"]
+[ext_resource type="PackedScene" uid="uid://cpkskkgfu1equ" path="res://scoundrel/Scenes/Particles/WarningEffect.tscn" id="3_isih2"]
 [ext_resource type="Texture2D" uid="uid://ddvmcih0ud4u1" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0003.png" id="4_isih2"]
 [ext_resource type="Texture2D" uid="uid://bs56ogorssfpy" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0004.png" id="5_bqqb8"]
 [ext_resource type="Texture2D" uid="uid://dluta36mvi7tx" path="res://scoundrel/Assets/Sprites/First_Boss/idle/1st_boss_frame0005.png" id="6_20ilw"]
@@ -168,6 +169,7 @@ radius = 889.0276
 [node name="FirstBoss" type="CharacterBody2D"]
 script = ExtResource("1_qo5c4")
 rock_scene = ExtResource("2_7xoiu")
+warning_scene = ExtResource("3_isih2")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_3pf6d")

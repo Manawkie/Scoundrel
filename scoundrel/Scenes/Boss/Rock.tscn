@@ -7,6 +7,8 @@
 size = Vector2(403, 581)
 
 [node name="Rock" type="RigidBody2D"]
+light_mask = 8
+visibility_layer = 8
 script = ExtResource("1_32xsy")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

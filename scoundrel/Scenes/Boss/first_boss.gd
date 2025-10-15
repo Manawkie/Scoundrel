@@ -7,8 +7,10 @@ extends CharacterBody2D
 @onready var ground_spawn_point = $RockSpawnPoint
 
 @export var rock_scene: PackedScene
-@export var spawn_range: float = 600.0  # ← horizontal range for random spawn
-@export var rock_count: int = 3         # ← number of rocks to spawn per attack
+@export var warning_scene: PackedScene   # ← your GPUParticles2D warning effect
+@export var spawn_range: float = 600.0   # ← horizontal random range
+@export var rock_count: int = 3          # ← number of rocks per attack
+@export var warning_delay: float = 0.8   # ← delay before rock rises
 
 enum BossState {FULL_HEALTH, HALF_HEALTH, QUARTER_HEALTH}
 enum AnimState {MELEE_ATTACK, RANGE_ATTACK}
@@ -19,6 +21,7 @@ var state_machine: AnimationNodeStateMachinePlayback
 var hp = 100
 var melee_range = false
 var projectile_range = true
+
 
 func _ready() -> void:
 	anim_tree.active = true
@@ -55,13 +58,12 @@ func range_attacks():
 	print("Boss starting range attack!")
 	state_machine.travel("Range_Attacks")  # Trigger punch animation
 
-	# Wait for impact frame (example delay to match animation)
-	#await get_tree().create_timer(0.5).timeout
+	# Delay to match impact frame
+	# await get_tree().create_timer(0.5).timeout
 
-	# Spawn several random rocks
 	for i in range(rock_count):
 		spawn_random_rock()
-		await get_tree().create_timer(0.3).timeout  # short delay between spawns
+		await get_tree().create_timer(0.3).timeout  # short delay between each
 
 	print("Boss range attack finished.")
 	state_machine.travel("Idle")
@@ -72,13 +74,21 @@ func spawn_random_rock():
 		push_error("No rock scene assigned!")
 		return
 
-	var rock = rock_scene.instantiate()
-	get_parent().add_child(rock)
-
-	# Random X around the boss position (using spawn_range)
+	# Random position around boss
 	var random_x = global_position.x + randf_range(-spawn_range / 2, spawn_range / 2)
 	var spawn_y = ground_spawn_point.global_position.y
+	var spawn_pos = Vector2(random_x, spawn_y)
 
-	rock.global_position = Vector2(random_x, spawn_y)
+	# --- Step 1: Spawn warning effect ---
+	if warning_scene:
+		var warning = warning_scene.instantiate()
+		get_parent().add_child(warning)
+		warning.global_position = spawn_pos
+		await get_tree().create_timer(warning_delay).timeout
+		# no need to set particles.emitting or queue_free here
 
+	# --- Step 2: Spawn the rock after the warning ---
+	var rock = rock_scene.instantiate()
+	get_parent().add_child(rock)
+	rock.global_position = spawn_pos
 	print("Spawned rock at: ", rock.global_position)
