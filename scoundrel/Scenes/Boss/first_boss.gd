@@ -7,20 +7,16 @@ extends CharacterBody2D
 @onready var ground_spawn_point = $RockSpawnPoint
 
 @export var rock_scene: PackedScene
-@export var warning_scene: PackedScene   # ← your GPUParticles2D warning effect
-@export var spawn_range: float = 600.0   # ← horizontal random range
-@export var rock_count: int = 3          # ← number of rocks per attack
-@export var warning_delay: float = 0.8   # ← delay before rock rises
-
-enum BossState {FULL_HEALTH, HALF_HEALTH, QUARTER_HEALTH}
-enum AnimState {MELEE_ATTACK, RANGE_ATTACK}
+@export var warning_scene: PackedScene
+@export var spawn_range: float = 5000.0
+@export var rock_count: int = 3
+@export var warning_delay: float = 0.8
+@export var min_spacing: float = 500.0
+@export var rock_rise_height: float = 300.0
 
 var state_machine: AnimationNodeStateMachinePlayback
-
-# --- BOSS VARIABLES ---
 var hp = 100
-var melee_range = false
-var projectile_range = true
+var last_spawn_positions: Array = []
 
 
 func _ready() -> void:
@@ -30,40 +26,27 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	sprite_direction()
-
 	if Input.is_action_just_pressed("ui_accept"):
 		range_attacks()
 
 
 func sprite_direction():
-	if player.global_position.x > global_position.x:
-		sprite.flip_h = true
-	else:
-		sprite.flip_h = false
+	sprite.flip_h = player.global_position.x > global_position.x
 
 
 func decrease_hp(damage):
 	hp -= damage
 
 
-func _on_melee_range_entered(_body: Node2D) -> void:
-	print("inside")
-
-
-func _on_melee_range_exited(_body: Node2D) -> void:
-	print("outside")
-
-
 func range_attacks():
 	print("Boss starting range attack!")
-	state_machine.travel("Range_Attacks")  # Trigger punch animation
+	state_machine.travel("Range_Attacks")
 
-	# Delay to match impact frame
-	# await get_tree().create_timer(0.5).timeout
+	last_spawn_positions.clear()
 
 	for i in range(rock_count):
 		spawn_random_rock()
-		await get_tree().create_timer(0.3).timeout  # short delay between each
+		await get_tree().create_timer(0.3).timeout
 
 	print("Boss range attack finished.")
 	state_machine.travel("Idle")
@@ -74,21 +57,58 @@ func spawn_random_rock():
 		push_error("No rock scene assigned!")
 		return
 
-	# Random position around boss
-	var random_x = global_position.x + randf_range(-spawn_range / 2, spawn_range / 2)
-	var spawn_y = ground_spawn_point.global_position.y
-	var spawn_pos = Vector2(random_x, spawn_y)
+	var spawn_pos = get_valid_spawn_position()
 
-	# --- Step 1: Spawn warning effect ---
+	# Step 1: Warning effect
+	var warning
 	if warning_scene:
-		var warning = warning_scene.instantiate()
+		warning = warning_scene.instantiate()
 		get_parent().add_child(warning)
 		warning.global_position = spawn_pos
-		await get_tree().create_timer(warning_delay).timeout
-		# no need to set particles.emitting or queue_free here
+		# Do NOT free it yet — we’ll fade it out later
 
-	# --- Step 2: Spawn the rock after the warning ---
+	await get_tree().create_timer(warning_delay).timeout
+
+	# Step 2: Spawn rock
 	var rock = rock_scene.instantiate()
 	get_parent().add_child(rock)
 	rock.global_position = spawn_pos
-	print("Spawned rock at: ", rock.global_position)
+
+	# Step 3: Rising animation
+	rock.start_rising()
+	var tween = create_tween()
+	var target_pos = spawn_pos - Vector2(0, rock_rise_height)
+	tween.tween_property(rock, "position", target_pos, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	await tween.finished
+	rock.stop_rising()
+
+	# Step 4: Fade out warning after the rock appears
+	if warning:
+		var fade_tween = create_tween()
+		fade_tween.tween_property(warning, "modulate:a", 0.0, 0.3)
+		await fade_tween.finished
+		warning.queue_free()
+
+	print("Spawned rock at:", rock.global_position)
+
+
+func get_valid_spawn_position() -> Vector2:
+	var attempts = 0
+	while attempts < 10:
+		var random_x = global_position.x + randf_range(-spawn_range / 2, spawn_range / 2)
+		var spawn_y = ground_spawn_point.global_position.y
+		var candidate = Vector2(random_x, spawn_y)
+
+		var too_close = false
+		for pos in last_spawn_positions:
+			if pos.distance_to(candidate) < min_spacing:
+				too_close = true
+				break
+
+		if not too_close:
+			last_spawn_positions.append(candidate)
+			return candidate
+
+		attempts += 1
+
+	return Vector2(global_position.x + randf_range(-spawn_range / 2, spawn_range / 2), ground_spawn_point.global_position.y)

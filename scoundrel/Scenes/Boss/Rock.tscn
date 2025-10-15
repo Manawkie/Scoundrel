@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://x3d7jq54pl5k"]
+[gd_scene load_steps=5 format=3 uid="uid://x3d7jq54pl5k"]
 
 [ext_resource type="Script" uid="uid://d4aaeia7f0cww" path="res://scoundrel/Scenes/Boss/rock.gd" id="1_32xsy"]
 [ext_resource type="Texture2D" uid="uid://qryml5x2bd2m" path="res://scoundrel/Assets/Maps/components/pillar.png" id="2_sktgx"]
@@ -6,9 +6,14 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3d31f"]
 size = Vector2(403, 581)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_32xsy"]
+size = Vector2(427, 636)
+
 [node name="Rock" type="RigidBody2D"]
 light_mask = 8
 visibility_layer = 8
+collision_layer = 8
+collision_mask = 8
 script = ExtResource("1_32xsy")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -17,7 +22,18 @@ scale = Vector2(0.62890625, 0.62890625)
 texture = ExtResource("2_sktgx")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+light_mask = 8
+visibility_layer = 8
 position = Vector2(7.5, 123.5)
 shape = SubResource("RectangleShape2D_3d31f")
 
 [node name="Timer" type="Timer" parent="."]
+
+[node name="DamageArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea"]
+position = Vector2(5.5, 125)
+shape = SubResource("RectangleShape2D_32xsy")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_entered" from="DamageArea" to="." method="_on_area_2d_body_entered"]
