@@ -22,9 +22,12 @@ var last_spawn_positions: Array = []
 func _ready() -> void:
 	anim_tree.active = true
 	state_machine = anim_tree.get("parameters/playback")
+	
 
 
 func _process(_delta: float) -> void:
+	dead_boss()
+	last_struggle()
 	sprite_direction()
 	if Input.is_action_just_pressed("ui_accept"):
 		range_attacks()
@@ -36,11 +39,20 @@ func sprite_direction():
 
 func decrease_hp(damage):
 	hp -= damage
+	print("boss current hp", hp)
+	
+func last_struggle():
+	if Input.is_action_just_pressed("ui_cancel"):
+		state_machine.travel("Last_Struggle")
 
+
+func dead_boss():
+	if hp <= 0:
+		state_machine.travel("Death")
 
 func range_attacks():
 	print("Boss starting range attack!")
-	state_machine.travel("Range_Attacks")
+	state_machine.travel("Slam")
 
 	last_spawn_positions.clear()
 
@@ -49,8 +61,10 @@ func range_attacks():
 		await get_tree().create_timer(0.3).timeout
 
 	print("Boss range attack finished.")
-	state_machine.travel("Idle")
 
+
+func boss_hit():
+	decrease_hp(1)
 
 func spawn_random_rock():
 	if not rock_scene:
@@ -112,3 +126,10 @@ func get_valid_spawn_position() -> Vector2:
 		attempts += 1
 
 	return Vector2(global_position.x + randf_range(-spawn_range / 2, spawn_range / 2), ground_spawn_point.global_position.y)
+
+func _on_hurt_box_area_entered(area: Area2D) -> void:
+	state_machine.travel("Hurt")
+	hp -= 5
+	print(hp)
+	print(area.name)
+	print("someone entered")

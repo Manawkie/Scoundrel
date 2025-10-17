@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://i77m07hpa0cu"]
+[gd_scene load_steps=8 format=3 uid="uid://i77m07hpa0cu"]
 
 [ext_resource type="Script" uid="uid://hwui1ebl1sk1" path="res://scoundrel/Scenes/Objects/Bullet/bullet.gd" id="1_llgq6"]
 [ext_resource type="Texture2D" uid="uid://dt814nuh3jb4a" path="res://scoundrel/Assets/Items/Bullet/test_bullet.png" id="2_wuffm"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vmwb7"]
+radius = 16.0
+height = 32.0
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_llgq6"]
 animations = [{
@@ -16,14 +18,47 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="Gradient" id="Gradient_wuffm"]
+colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_8uji8"]
+gradient = SubResource("Gradient_wuffm")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_wuffm"]
+particle_flag_disable_z = true
+inherit_velocity_ratio = 0.2
+spread = 180.0
+initial_velocity_min = 70.0
+initial_velocity_max = 140.0
+radial_velocity_min = -2.2351742e-05
+radial_velocity_max = 143.53998
+gravity = Vector3(0, 0, 0)
+radial_accel_min = -2.2351742e-06
+radial_accel_max = -2.2351742e-06
+scale_min = 5.0
+scale_max = 5.0
+color = Color(0, 0, 0, 1)
+color_ramp = SubResource("GradientTexture1D_8uji8")
+
 [node name="Bullet" type="Area2D"]
+collision_layer = 13
+collision_mask = 13
 script = ExtResource("1_llgq6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_vmwb7")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+self_modulate = Color(0.012617188, 0.012617188, 0.012617188, 1)
 position = Vector2(-0.9999962, 3.8146973e-06)
 scale = Vector2(0.12695317, 0.12695317)
 sprite_frames = SubResource("SpriteFrames_llgq6")
 animation = &"bullet"
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 30
+one_shot = true
+explosiveness = 1.0
+randomness = 1.0
+process_material = SubResource("ParticleProcessMaterial_wuffm")

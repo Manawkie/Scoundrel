@@ -27,7 +27,7 @@ func set_grapple_mode(aim_vector: Vector2, speed: float, player: CharacterBody2D
 
 	# Set up the line visually
 	line.width = 10.0
-	line.default_color = Color(0.9, 0.9, 0.9)# light gray rope
+	line.default_color = Color(0.0, 0.0, 0.0, 1.0)# light gray rope
 	line.clear_points()
 	
 	# Initialize with enough points for the whip effect (NUM_SEGMENTS + 1 points)

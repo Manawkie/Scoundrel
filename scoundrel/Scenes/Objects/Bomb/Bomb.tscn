@@ -41,16 +41,18 @@ particle_flag_disable_z = true
 emission_shape = 1
 emission_sphere_radius = 6.12
 spread = 180.0
-initial_velocity_min = 80.0
-initial_velocity_max = 240.0
+initial_velocity_min = 150.0
+initial_velocity_max = 1505.0
 orbit_velocity_min = 9.49949e-08
 orbit_velocity_max = 9.49949e-08
 gravity = Vector3(0, 0, 0)
-scale_min = 39.28
-scale_max = 39.28
+scale_min = 30.0
+scale_max = 50.0
 color_ramp = SubResource("GradientTexture1D_gr6qd")
 
 [node name="Bomb" type="RigidBody2D"]
+collision_layer = 9
+collision_mask = 9
 script = ExtResource("1_nn6mt")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
