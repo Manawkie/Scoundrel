@@ -48,11 +48,12 @@ orbit_velocity_max = 9.49949e-08
 gravity = Vector3(0, 0, 0)
 scale_min = 30.0
 scale_max = 50.0
+color = Color(0.39565226, 0.23642614, 0.00930276, 1)
 color_ramp = SubResource("GradientTexture1D_gr6qd")
 
 [node name="Bomb" type="RigidBody2D"]
-collision_layer = 9
-collision_mask = 9
+collision_layer = 10
+collision_mask = 10
 script = ExtResource("1_nn6mt")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]

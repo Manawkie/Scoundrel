@@ -4,7 +4,7 @@ extends RigidBody2D # CHANGED from Area2D to RigidBody2D for physics control
 @onready var _timer: Timer = $Timer
 @onready var _explosion: GPUParticles2D = $GPUParticles2D
 @onready var _sprite = $AnimatedSprite2D
-const INHERIT_VELOCITY_MULTIPLIER = 0.5
+const INHERIT_VELOCITY_MULTIPLIER = 1.0
 
 # --- NEW: Flag to prevent multiple explosions ---
 var has_exploded: bool = false

@@ -50,7 +50,7 @@ const EYE_SMOOTH_FACTOR = 0.1 # How smoothly the eye tracks the cursor (0.0 to 1
 const AIR_CONTROL_FACTOR = 0.2 # Multiplier for max horizontal speed in the air (e.g., 800 * 0.6 = 480)
 const AIR_ACCEL_RATE = 0.15    # The "smoothness" factor for changing direction in the air (0.0 to 1.0)
 const AIR_MOMENTUM_IDLE_DECAY = 0.1 # momentum decay
-const AIR_MOMENTUM_ACTIVE_DECAY = 0.02 # momentum decay
+const AIR_MOMENTUM_ACTIVE_DECAY = 0.002 # momentum decay
 
 # --- MOVEMENT  VARIABLE ---
 var direction: float = 0.0
