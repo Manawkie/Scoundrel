@@ -704,10 +704,10 @@ texture = ExtResource("4_nsi88")
 [node name="Godrays2" type="ColorRect" parent="Map/3"]
 modulate = Color(1, 1, 1, 0.078431375)
 material = SubResource("ShaderMaterial_miokm")
-offset_left = -417.69238
-offset_top = -613.0769
-offset_right = 1407.3076
-offset_bottom = 1211.9231
+offset_left = -441.53848
+offset_top = -796.1539
+offset_right = 1383.4615
+offset_bottom = 1028.8462
 
 [node name="Godrays2" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_miokm")
